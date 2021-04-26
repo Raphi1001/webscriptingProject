@@ -1,3 +1,4 @@
 "use strict";
-var test;
-var niceCock = 3;
+function createAppointment() {
+    alert("kommt sofort");
+}
