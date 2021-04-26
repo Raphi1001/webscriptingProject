@@ -1,4 +1,3 @@
-var test;
-
-
-let niceCock: number = 3;
+function createAppointment() {
+   alert("d sofort");
+}
