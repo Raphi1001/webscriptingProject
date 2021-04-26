@@ -1,4 +1,4 @@
 "use strict";
 function createAppointment() {
-    alert("d sofort");
+    alert("kommt sofort");
 }

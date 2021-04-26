@@ -1,3 +1,3 @@
 function createAppointment() {
-   alert("d sofort");
+   alert("kommt sofort");
 }
