@@ -20,5 +20,8 @@
     "dependencies": {
         "lite-server": "^2.6.1",
         "save-dev": "0.0.1-security"
+    },
+    "devDependencies": {
+        "@types/jquery": "^3.5.5"
     }
 }
