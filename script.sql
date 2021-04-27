@@ -1,10 +1,9 @@
--- database
 -- phpMyAdmin SQL Dump
 -- version 5.1.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 26. Apr 2021 um 18:29
+-- Erstellungszeit: 27. Apr 2021 um 15:57
 -- Server-Version: 10.4.18-MariaDB
 -- PHP-Version: 7.4.16
 
@@ -34,6 +33,7 @@ CREATE TABLE `appointments` (
   `app_id` int(11) NOT NULL,
   `title` text NOT NULL,
   `location` text NOT NULL,
+  `description` text NOT NULL,
   `date` date NOT NULL,
   `vote_expire` date NOT NULL,
   `creator_id` int(11) NOT NULL
@@ -183,4 +183,3 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
