@@ -8,4 +8,9 @@
 
 .btn {
     margin-bottom: 1em;
+    margin-top: 1em;
+}
+
+.dateOption {
+    margin-bottom: 0.2em;
 }
