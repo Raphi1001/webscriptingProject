@@ -7,19 +7,17 @@ class Appointment {
     public $location;
     public $description;
     public $vote_expire;
-    public $date;
-    public $creator_id;
+    public $creator_name;
 
 
-    function __construct($app_id, $title, $location, $description, $vote_expire, $date, $creator_id)
+    function __construct($app_id, $title, $location, $description, $vote_expire, $creator_name)
     {
         $this->app_id = $app_id;
         $this->title = $title;
         $this->location = $location;
         $this->description = $description;
         $this->vote_expire = $vote_expire;
-        $this->date = $date;
-        $this->creator_id = $creator_id;
+        $this->creator_name = $creator_name;
     }
 
 

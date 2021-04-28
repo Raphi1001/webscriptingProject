@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 27. Apr 2021 um 15:57
+-- Erstellungszeit: 28. Apr 2021 um 19:26
 -- Server-Version: 10.4.18-MariaDB
 -- PHP-Version: 7.4.16
 
@@ -23,6 +23,16 @@ SET time_zone = "+00:00";
 CREATE DATABASE IF NOT EXISTS `webscript_project` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `webscript_project`;
 
+DELIMITER $$
+--
+-- Prozeduren
+--
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getAppointmentList` ()  SELECT *
+FROM appointments
+ORDER BY app_id DESC$$
+
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 --
@@ -34,10 +44,16 @@ CREATE TABLE `appointments` (
   `title` text NOT NULL,
   `location` text NOT NULL,
   `description` text NOT NULL,
-  `date` date NOT NULL,
   `vote_expire` date NOT NULL,
-  `creator_id` int(11) NOT NULL
+  `creator_name` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Daten für Tabelle `appointments`
+--
+
+INSERT INTO `appointments` (`app_id`, `title`, `location`, `description`, `vote_expire`, `creator_name`) VALUES
+(1, 'hallo treff', 'wien', 'cooles treffen haha', '2021-04-29', '1');
 
 -- --------------------------------------------------------
 
@@ -47,10 +63,17 @@ CREATE TABLE `appointments` (
 
 CREATE TABLE `comments` (
   `comment_id` int(11) NOT NULL,
-  `from_id` int(11) NOT NULL,
+  `creator_name` text NOT NULL,
   `appointment_id` int(11) NOT NULL,
   `comment` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Daten für Tabelle `comments`
+--
+
+INSERT INTO `comments` (`comment_id`, `creator_name`, `appointment_id`, `comment`) VALUES
+(1, '1', 1, 'als ob bruh');
 
 -- --------------------------------------------------------
 
@@ -64,6 +87,13 @@ CREATE TABLE `dates` (
   `appointment_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Daten für Tabelle `dates`
+--
+
+INSERT INTO `dates` (`date_id`, `date`, `appointment_id`) VALUES
+(1, '2021-04-30', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -72,20 +102,16 @@ CREATE TABLE `dates` (
 
 CREATE TABLE `participation` (
   `participation_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `participator_name` text NOT NULL,
   `appointment_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- --------------------------------------------------------
-
 --
--- Tabellenstruktur für Tabelle `user`
+-- Daten für Tabelle `participation`
 --
 
-CREATE TABLE `user` (
-  `user_id` int(11) NOT NULL,
-  `name` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+INSERT INTO `participation` (`participation_id`, `participator_name`, `appointment_id`) VALUES
+(1, '1', 1);
 
 -- --------------------------------------------------------
 
@@ -95,9 +121,16 @@ CREATE TABLE `user` (
 
 CREATE TABLE `votes` (
   `vote_id` int(11) NOT NULL,
-  `from_id` int(11) NOT NULL,
+  `vote_name` text NOT NULL,
   `date_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Daten für Tabelle `votes`
+--
+
+INSERT INTO `votes` (`vote_id`, `vote_name`, `date_id`) VALUES
+(1, '1', 1);
 
 --
 -- Indizes der exportierten Tabellen
@@ -128,12 +161,6 @@ ALTER TABLE `participation`
   ADD PRIMARY KEY (`participation_id`);
 
 --
--- Indizes für die Tabelle `user`
---
-ALTER TABLE `user`
-  ADD PRIMARY KEY (`user_id`);
-
---
 -- Indizes für die Tabelle `votes`
 --
 ALTER TABLE `votes`
@@ -147,37 +174,31 @@ ALTER TABLE `votes`
 -- AUTO_INCREMENT für Tabelle `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `app_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `app_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT für Tabelle `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT für Tabelle `dates`
 --
 ALTER TABLE `dates`
-  MODIFY `date_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `date_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT für Tabelle `participation`
 --
 ALTER TABLE `participation`
-  MODIFY `participation_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT für Tabelle `user`
---
-ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `participation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT für Tabelle `votes`
 --
 ALTER TABLE `votes`
-  MODIFY `vote_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `vote_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

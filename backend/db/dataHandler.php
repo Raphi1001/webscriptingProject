@@ -31,18 +31,16 @@ class DataHandler
 
     private static function getDemoData()
     {
-        
-
         $demodata = [
-            new Appointment(1, "Appointment Cool", "Wien", "Super coole beschreibung", "5-5-5", "Morgen", 1),
-            new Appointment(2, "Cooles Appointment", "Burgenland", "das ist die description", "6-6-6", "Heute", 5354354),
-            new Appointment(3, "Auch spannenvvvvvvvvvd", "Niederösterreich", "und so weiter", "7-7-7", "Nächste woche", 77),
-            new Appointment(4, "Test", "Afrika", "mir fällt nichts mehr ein", "8-8-8", "nie", 6),
-            new Appointment(4, "Test", "Afrika", "mir fällt nichts mehr einsaddasdaddddddddddddddddddddddddddddddddddddddddddddd", "8-8-8", "nie", 6),
+            new Appointment(1, "Appointment Cool", "Wien", "Super coole beschreibung", "Morgen", 1),
+            new Appointment(2, "Cooles Appointment", "Burgenland", "das ist die description", "Heute", 5354354),
+            new Appointment(3, "Auch spannenvvvvvvvvvd", "Niederösterreich", "und so weiter", "Nächste woche", 77),
+            new Appointment(4, "Test", "Afrika", "mir fällt nichts mehr ein", "nie", 6),
+            new Appointment(5, "Test", "Afrika", "mir fällt nichts mehr einsaddasdaddddddddddddddddddddddddddddddddddddddddddddd", "nie", 6),
 
-            new Appointment(4, "Test", "Afrika", "mir fällt nichts mehr ein", "8-8-8", "nie", 6),
+            new Appointment(6, "Test", "Afrika", "mir fällt nichts mehrasdd ein", "nie", 6),
 
-            new Appointment(4, "Test", "Afrika", "mir fällt nichts mehr ein", "8-8-8", "nie", 6),
+            new Appointment(7, "Test", "Afrika", "mir fällt nichts xcxxmehr ein", "nie", 6),
 
         ];
         return $demodata;

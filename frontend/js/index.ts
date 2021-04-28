@@ -8,7 +8,7 @@ function loadNewAppointmentForm() {
    $("#pageContent").load("templates/newAppointmentForm.html");
 }
 
-function loadAppointmentDetails(appointmentTitle: string) {
+function loadAppointmentDetails(appointmentTitle: number) {
    $("#pageContent").load("templates/appointmentDetails.html", function () {
       callAppointmentDetailsData(appointmentTitle);
    });

@@ -90,37 +90,30 @@ class DB
     }
 
 
-    public function createAppointment($title, $location, $description, $vote_expire, $date, $creator_id) {
-        $query = "INSERT INTO appointments('title', 'location', 'description', 'vote_expire', 'date', 'creator_id') VALUES(?,?,?,?,?);";
+    public function createAppointment($title, $location, $description, $vote_expire, $creator_name) {
+        $query = "INSERT INTO appointments('title', 'location', 'description', 'vote_expire', 'creator_name') VALUES(?,?,?,?,?);";
         $stmt = $this->db->prepare($query);
-        $stmt->bind_param("sssssi", $title, $location, $description, $vote_expire, $date, $creator_id);
+        $stmt->bind_param("sssss", $title, $location, $description, $vote_expire, $creator_name);
         $stmt->execute();
         //kein result weil es werden nur daten eingefügt und ja so lala ist das jetzt
         //pls help
     }
 
 
-    public function createUser($name){
-        $query = "INSERT INTO user('name') VALUES(?);";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param("s", $name);
-        $stmt->execute();
-        //no result lol 
-    }
 
-    public function createComment($from_id, $app_id, $comment){
-        $query = "INSERT INTO comments('from_id', 'appointment_id', 'comment') VALUES(?,?,?);";
+    public function createComment($creator_name, $app_id, $comment){
+        $query = "INSERT INTO comments('creator_name', 'appointment_id', 'comment') VALUES(?,?,?);";
         $stmt = $this->db->prepare($query);
-        $stmt->bind_param("iis", $from_id, $app_id, $comment);
+        $stmt->bind_param("sis", $creator_name, $app_id, $comment);
         $stmt->execute();
         //no result lol 
     }
 
 
-    public function createVote($from_id, $date_id){
-        $query = "INSERT INTO votes('from_id', 'date_id') VALUES(?,?);";
+    public function createVote($vote_name, $date_id){
+        $query = "INSERT INTO votes('vote_name', 'date_id') VALUES(?,?);";
         $stmt = $this->db->prepare($query);
-        $stmt->bind_param("ii", $from_id, $date_id);
+        $stmt->bind_param("si", $vote_name, $date_id);
         $stmt->execute();
         //no result lol 
     }
@@ -134,10 +127,10 @@ class DB
         //no result lol 
     }
 
-    public function createParticipation($user_id, $app_id){
-        $query = "INSERT INTO participation('user_id', 'appointment_id') VALUES(?,?);";
+    public function createParticipation($participator_name, $app_id){
+        $query = "INSERT INTO participation('participator_name', 'appointment_id') VALUES(?,?);";
         $stmt = $this->db->prepare($query);
-        $stmt->bind_param("ii", $user_id, $app_id);
+        $stmt->bind_param("si", $participator_name, $app_id);
         $stmt->execute();
         //no result lol 
     }

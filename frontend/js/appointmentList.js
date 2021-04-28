@@ -7,6 +7,7 @@ function callAppointmentListData() {
         data: { method: "queryAppointment" },
         dataType: "json",
         success: function (result) {
+            console.log(result);
             $("#pageContent").load("templates/appointmentList.html", function () {
                 for (var i = 0; i < result.length; ++i) {
                     var appointmentTitle = result[i].title;
