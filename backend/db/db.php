@@ -1,11 +1,11 @@
 <?php
 
-include "../models/appointment.php";
-include "../models/comments.php";
-include "../models/dates.php";
-include "../models/participation.php";
-include "../models/user.php";
-include "../models/votes.php";
+include_once "./models/appointment.php";
+include_once "./models/comments.php";
+include_once "./models/dates.php";
+include_once "./models/participation.php";
+include_once "./models/user.php";
+include_once "./models/votes.php";
 
 class DB
 {
@@ -46,8 +46,7 @@ class DB
     {
         
         if ($this->db->connect($this->host, $this->username, $this->passwd, $this->dbname) === false) {
-            Alert::echoAlert("Ein Fehler ist aufgetreten: Bitte überprüfen Sie Ihre Datenbank anbindung!", false);
-            exit;
+            return NULL;
         }
         
     }
@@ -74,40 +73,77 @@ class DB
             $stmt = $this->db->prepare($query);
             $stmt->execute();
             $result = $stmt->get_result();
+            var_dump($result);
+            return $result;
             //$result = $stmt->fetch(); alte code lol
-
+            /*
             if ($result && $result->num_rows) {
                 while ($row = $result->fetch_object()) {
                     array_push($appointmentArray, $row);
                 }
             }
             $result->free_result();
-        }
+        */}
         return $appointmentArray;
+        
+
     }
 
-    /**
-     * Returns a list of all Users as an array of User objects
-     * 
-     * @return array Array of User objects
-     */
-    public function getUserList()
-    {
-        $userArray = array();
-        if ($this->db->connect_errno == 0) {
-            $stmt = $this->db->prepare("CALL getUserList");
-            $stmt->execute();
-            $result = $stmt->get_result();
 
-            if ($result && $result->num_rows) {
-                while ($row = $result->fetch_object()) {
-                    array_push($userArray, $this->convertRowToUser($row));
-                }
-            }
-            $result->free_result();
-        }
-        return $userArray;
+    public function createAppointment($title, $location, $description, $vote_expire, $date, $creator_id) {
+        $query = "INSERT INTO appointments('title', 'location', 'description', 'vote_expire', 'date', 'creator_id') VALUES(?,?,?,?,?);";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("sssssi", $title, $location, $description, $vote_expire, $date, $creator_id);
+        $stmt->execute();
+        //kein result weil es werden nur daten eingefügt und ja so lala ist das jetzt
+        //pls help
     }
+
+
+    public function createUser($name){
+        $query = "INSERT INTO user('name') VALUES(?);";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("s", $name);
+        $stmt->execute();
+        //no result lol 
+    }
+
+    public function createComment($from_id, $app_id, $comment){
+        $query = "INSERT INTO comments('from_id', 'appointment_id', 'comment') VALUES(?,?,?);";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("iis", $from_id, $app_id, $comment);
+        $stmt->execute();
+        //no result lol 
+    }
+
+
+    public function createVote($from_id, $date_id){
+        $query = "INSERT INTO votes('from_id', 'date_id') VALUES(?,?);";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("ii", $from_id, $date_id);
+        $stmt->execute();
+        //no result lol 
+    }
+
+
+    public function createDate($date, $app_id){
+        $query = "INSERT INTO dates('date', 'appointment_id') VALUES(?,?);";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("si", $name, $app_id);
+        $stmt->execute();
+        //no result lol 
+    }
+
+    public function createParticipation($user_id, $app_id){
+        $query = "INSERT INTO participation('user_id', 'appointment_id') VALUES(?,?);";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("ii", $user_id, $app_id);
+        $stmt->execute();
+        //no result lol 
+    }
+
+
+    
 
 
 
@@ -135,55 +171,7 @@ class DB
         return $uname;
     }
 
-    /**
-     * Returns User object of given username
-     * 
-     * @param string $username Username
-     * @return mixed User object if user exists, else NULL
-     */
-    public function getUser($username)
-    {
-        $userObject = NULL;
-        if ($this->db->errno == 0) {
-            //escape special chars to prevent SQL injections
-            $username = $this->db->escape_string($username);
-            if ($stmt = $this->db->prepare("CALL getUser(?)")) {
-                $stmt->bind_param("s", $username);
-                if ($stmt->execute() && $result = $stmt->get_result()) {
-                    if ($row = $result->fetch_object()) {
-                        $userObject = $this->convertRowToUser($row);
-                    }
-                }
-                $result->free_result();
-            }
-        }
-        return $userObject;
-    }
-
-    /**
-     * Returns User object of given userid
-     * 
-     * @param int $userid User_ID
-     * @return mixed User object if user exists, else NULL
-     */
-    public function getUserById($userid)
-    {
-        $userObject = NULL;
-        if ($this->db->errno == 0) {
-            //escape special chars to prevent SQL injections
-            $userid = $this->db->escape_string($userid);
-            if ($stmt = $this->db->prepare("CALL getUserById(?)")) {
-                $stmt->bind_param("i", $userid);
-                if ($stmt->execute() && $result = $stmt->get_result()) {
-                    if ($row = $result->fetch_object()) {
-                        $userObject = $this->convertRowToUser($row);
-                    }
-                }
-                $result->free_result();
-            }
-        }
-        return $userObject;
-    }
+    
 
     /**
      * Checks if email already exists
@@ -229,59 +217,9 @@ class DB
         return false;
     }
 
-    /**
-     * Returns active status of user
-     * 
-     * @param string $username Username
-     * @return bool Active status
-     */
-    public function getActiveStatus($username)
-    {
-        $user = $this->getUser($username);
-        return $user->getProperty("isActive");
-    }
+   
 
-    /**
-     * Inserts User into the database
-     * 
-     * @param User $user User object
-     * @return bool TRUE if successful, FALSE if not
-     */
-    public function insertUser($user)
-    {
-
-        if ($this->db->errno == 0) {
-            $userArray = $user->getAllVars();
-            $userArray = $this->escapeAllVars($userArray);
-            $stmt = $this->db->prepare("CALL insertUser(?, ?, ?, ?, ?, ?, ?)");
-
-            $gender = $userArray['gender'];
-            $fname = $userArray['fname'];
-            $lname = $userArray['lname'];
-            $email = $userArray['email'];
-            $uname = $userArray['uname'];
-            $pwd = $userArray['pwd'];
-            $userPicObj = $userArray['userPicObj'] ? $userArray['userPicObj']->getProperty('fileName') : NULL;
-
-            if ($stmt) {
-                $stmt->bind_param(
-                    "sssssss",
-                    $gender,
-                    $fname,
-                    $lname,
-                    $email,
-                    $uname,
-                    $pwd,
-                    $userPicObj
-                );
-                $stmt->execute();
-                if ($stmt->errno == 0) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+    
 
     /**
      * Updates password of a user
@@ -309,47 +247,7 @@ class DB
         return false;
     }
 
-    /**
-     * Updates User data
-     * 
-     * @param User $user User object
-     * @param string $oldUsername (Old) Username
-     * @return bool TRUE is successful, FALSE is not
-     */
-    public function updateUser($user, $oldUsername)
-    {
-        if ($this->db->errno == 0) {
-            $userArray = $user->getAllVars();
-            $userArray = $this->escapeAllVars($userArray);
-            $stmt = $this->db->prepare("CALL updateUser(?, ?, ?, ?, ?, ?, ?)");
-
-            $gender = $userArray['gender'];
-            $fname = $userArray['fname'];
-            $lname = $userArray['lname'];
-            $email = $userArray['email'];
-            $uname = $userArray['uname'];
-            $userPicObj = $userArray['userPicObj'] ? $userArray['userPicObj']->getProperty("fileName") : NULL;
-
-            if ($stmt) {
-                $stmt->bind_param(
-                    "sssssss",
-                    $gender,
-                    $fname,
-                    $lname,
-                    $email,
-                    $uname,
-                    $userPicObj,
-                    $oldUsername,
-                );
-                $stmt->execute();
-
-                if ($stmt->errno == 0) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+    
 
     /**
      * Deletes User from database
@@ -370,22 +268,6 @@ class DB
         return false;
     }
 
-    /**
-     * Verifies username and password
-     * 
-     * @param string $username Username
-     * @param string $password Password
-     * @return bool TRUE is successful, FALSE is not
-     */
-    public function loginUser($username, $password)
-    {
-        $user = $this->getUser($username);
-        if ($user) {
-            $pwdHash = $user->getProperty('pwd');
-            return password_verify($password, $pwdHash);
-        }
-        return false;
-    }
 
     /**
      * Changes isActive status of User
@@ -423,37 +305,7 @@ class DB
         return $array;
     }
 
-    /**
-     * Converts mysqli_fetch_object result into User object
-     * 
-     * @param object $row Fetched database row
-     * @return User User object
-     */
-    private function convertRowToUser($row)
-    {
-        $newUser = new User();
-        if ($row->Benutzerbildreferenz !== null) {
-            $newImg = new Img();
-            $newImg->loadImage($row->Benutzerbildreferenz, $row->User_ID);
-        } else {
-            $newImg = null;
-        }
-
-        $newUser->loadDatabaseUser(
-            $row->User_ID,
-            $row->Anrede,
-            $row->Vorname,
-            $row->Nachname,
-            $row->Emailadresse,
-            $row->Username,
-            $row->Passwort,
-            $row->ist_admin,
-            $row->ist_aktiv,
-            $newImg
-        );
-
-        return $newUser;
-    }
+    
 
     /**
      * Inserts Comment into the database
@@ -483,62 +335,9 @@ class DB
         return false;
     }
 
-    /**
-     * Returns an array of all Comments of a Post
-     * 
-     * @param int $postId Post_ID
-     * @return array Array of Comment objects
-     */
-    public function getComments($postId)
-    {
-        $commentArray = array();
-        if ($this->db->connect_errno == 0) {
-            if ($stmt = $this->db->prepare("CALL getComments(?)")) {
-                $stmt->bind_param("i", $postId);
+    
 
-                $stmt->execute();
-                $result = $stmt->get_result();
-
-                if ($result && $result->num_rows) {
-                    while ($row = $result->fetch_object()) {
-                        $temp = new Comment();
-                        $temp->createComment($row->User_ID, $postId, $row->Inhalt, $row->Kommentar_ID);
-                        array_push($commentArray, $temp);
-                    }
-                }
-                $result->free_result();
-            }
-        }
-        return $commentArray;
-    }
-
-     /**
-     * Returns an array of all Comments of a Post
-     * 
-     * @param int $postId Post_ID
-     * @return array Array of Comment objects
-     */
-    public function getCommentById($commentId)
-    {
-        $comment = NULL;
-        if ($this->db->connect_errno == 0) {
-            if ($stmt = $this->db->prepare("CALL getCommentById(?)")) {
-                $stmt->bind_param("i", $commentId);
-
-                $stmt->execute();
-                $result = $stmt->get_result();
-
-                if ($result && $result->num_rows) {
-                    if ($row = $result->fetch_object()) {
-                        $comment = new Comment();
-                        $comment->createComment($row->User_ID, $row->Beitrags_ID, $row->Inhalt, $row->Kommentar_ID);
-                    }
-                }
-                $result->free_result();
-            }
-        }
-        return $comment;
-    }
+    
 
     /**
      * Updates Comment in database
@@ -587,66 +386,10 @@ class DB
         return false;
     }
 
-    /**
-     * Returns a list of all Posts as an array of Post objects
-     * 
-     * @param string $sortby name of the sorting key ('Uploadzeit', 'Likes', or 'Dislikes')
-     * @param bool $publicOnly show only public posts
-     * @return array Array of Post objects
-     */
-    public function getAllPosts($sortby = "", $publicOnly = true)
-    {
-        $postArray = array();
-        if ($this->db->connect_errno == 0 && $stmt = $this->db->prepare("CALL getAllPosts(?, ?)")) {
-            $sortby = $this->db->escape_string($sortby);
-            $stmt->bind_param("si", $sortby, $publicOnly);
-            $stmt->execute();
-            if ($stmt->errno == 0) {
-                $result = $stmt->get_result();
-                $stmt->close();
+  
+   
 
-                if ($result && $result->num_rows) {
-                    while ($row = $result->fetch_object()) {
-                        $postId = $row->Beitrags_ID;
-                        $tags = $this->getPostTags($postId);
-
-                        array_push($postArray, $this->convertRowToPost($row, $tags));
-                    }
-                }
-                $result->free_result();
-            }
-        }
-        return $postArray;
-    }
-
-    /**
-     * Returns a Post by postId
-     * 
-     * @param int $postId Beitrags_ID
-     * @return Post Post object
-     */
-    public function getPostbyId($postId)
-    {
-        $post = NULL;
-        if ($this->db->connect_errno == 0 && $stmt = $this->db->prepare("CALL getPostById(?)")) {
-            $postId = $this->db->escape_string($postId);
-            $stmt->bind_param("i", $postId);
-            $stmt->execute();
-            if ($stmt->errno == 0) {
-                $result = $stmt->get_result();
-                $stmt->close();
-
-                if ($result && $result->num_rows) {
-                    if ($row = $result->fetch_object()) {
-                        $tags = $this->getPostTags($postId);
-                        $post = $this->convertRowToPost($row, $tags);
-                    }
-                }
-                $result->free_result();
-            }
-        }
-        return $post;
-    }
+    
 
     /**
      * Returns a list of all Tags from a Post
@@ -671,71 +414,9 @@ class DB
         return $tags;
     }
 
-    /**
-     * Returns a list of all Posts as an array of Post objects
-     * 
-     * @param string $sortby name of the sorting key ('Uploadzeit', 'Likes', or 'Dislikes')
-     * @param bool $publicOnly show only public posts
-     * @return array Array of Post objects
-     */
-    public function getUserPosts($userId, $sortby = "", $publicOnly = true)
-    {
-        $postArray = array();
-        if ($this->db->connect_errno == 0 && $stmt = $this->db->prepare("CALL getUserPosts(?, ?, ?)")) {
-            $userId = $this->db->escape_string($userId);
-            $sortby = $this->db->escape_string($sortby);
-            $stmt->bind_param("isi", $userId, $sortby, $publicOnly);
-            $stmt->execute();
-            if ($stmt->errno == 0) {
-                $result = $stmt->get_result();
-                $stmt->close();
+    
 
-                if ($result && $result->num_rows) {
-                    while ($row = $result->fetch_object()) {
-                        $postId = $row->Beitrags_ID;
-                        $tags = $this->getPostTags($postId);
-
-                        array_push($postArray, $this->convertRowToPost($row, $tags));
-                    }
-                }
-                $result->free_result();
-            }
-        }
-        return $postArray;
-    }
-
-    /**
-     * Converts mysqli_fetch_object result into Post object
-     * 
-     * @param object $row Fetched database row
-     * @param array $tags tag array
-     * @return Post Post object
-     */
-    private function convertRowToPost($row, $tags)
-    {
-        $newPost = new Post();
-
-        if ($row->Bildreferenz !== null) {
-            $newImg = new Img();
-            $newImg->loadImage($row->Bildreferenz, $row->User_ID);
-        } else {
-            $newImg = null;
-        }
-
-        $newPost->setImg($newImg);
-
-        $newPost->createPost(
-            $row->User_ID,
-            $row->Beschreibung,
-            $row->Privat,
-            $row->Beitrags_ID,
-            $row->Uploadzeit,
-            $row->Likes,
-            $row->Dislikes
-        );
-        $newPost->setTags($tags);
-        return $newPost;
-    }
+    
 
     /**
      * Inserts Post into the database
@@ -1051,144 +732,8 @@ class DB
         return false;
     }
 
-    /**
-     * Searches for posts in the database
-     * 
-     * @param string $searchterm search term
-     * @param string $sortby name of the sorting key ('Uploadzeit', 'Likes', or 'Dislikes')
-     * @param bool $publicOnly show only public posts
-     * @return array Array of Post objects
-     */
-    public function searchPosts($searchTerm, $sortby = "", $publicOnly = true)
-    {
-        $postArray = array();
+    
 
-        if ($this->db->errno == 0 && $stmt = $this->db->prepare("CALL searchPosts(?, ?, ?)")) {
-            $searchTerm = $this->db->escape_string($searchTerm);
-            $sortby = $this->db->escape_string($sortby);
-
-            $stmt->bind_param("ssi", $searchTerm, $sortby, $publicOnly);
-            $stmt->execute();
-            if ($stmt->errno == 0) {
-                $result = $stmt->get_result();
-                $stmt->close();
-
-                if ($result && $result->num_rows) {
-                    while ($row = $result->fetch_object()) {
-                        $postId = $row->Beitrags_ID;
-                        $tags = $this->getPostTags($postId);
-
-                        array_push($postArray, $this->convertRowToPost($row, $tags));
-                    }
-                }
-                $result->free_result();
-            }
-        }
-        return $postArray;
-    }
-
-    /**
-     * Searches for posts by tags in the database
-     * 
-     * @param array $tagArray tag array
-     * @param string $sortby name of the sorting key ('Uploadzeit', 'Likes', or 'Dislikes')
-     * @param bool $publicOnly show only public posts
-     * @return array Array of Post objects
-     */
-    public function searchTags($tagArray, $sortby = "", $publicOnly = true)
-    {
-        $postArray = array();
-
-        if ($this->db->errno == 0 && $stmt = $this->db->prepare("CALL searchTags(?, ?, ?)")) {
-            $tagString = implode(",", $tagArray);
-            $tagString = $this->db->escape_string($tagString);
-            $sortby = $this->db->escape_string($sortby);
-
-            $stmt->bind_param("ssi", $tagString, $sortby, $publicOnly);
-            $stmt->execute();
-            if ($stmt->errno == 0) {
-                $result = $stmt->get_result();
-                $stmt->close();
-
-                if ($result && $result->num_rows) {
-                    while ($row = $result->fetch_object()) {
-                        $postId = $row->Beitrags_ID;
-                        $tags = $this->getPostTags($postId);
-
-                        array_push($postArray, $this->convertRowToPost($row, $tags));
-                    }
-                }
-                $result->free_result();
-            }
-        }
-        return $postArray;
-    }
-
-    /**
-     * Searches for Comments
-     * 
-     * @param string $searchTerm Search term
-     * @param bool $publicOnly show only comments from public posts
-     * @return array Array of Comment objects
-     */
-    public function searchComments($searchTerm, $publicOnly = true)
-    {
-        $commentArray = array();
-        if ($this->db->connect_errno == 0) {
-            if ($stmt = $this->db->prepare("CALL searchComments(?, ?)")) {
-                $stmt->bind_param("si", $searchTerm, $publicOnly);
-                if ($stmt->execute()) {
-                    $result = $stmt->get_result();
-
-                    if ($result && $result->num_rows) {
-                        while ($row = $result->fetch_object()) {
-                            $temp = new Comment();
-                            $temp->createComment($row->User_ID, $row->Beitrags_ID, $row->Inhalt, $row->Kommentar_ID);
-                            array_push($commentArray, $temp);
-                        }
-                    }
-                    $result->free_result();
-                }
-            }
-        }
-        return $commentArray;
-    }
-
-    /**
-     * Searches for image name in all posts in the database
-     * 
-     * @param string $searchterm search term
-     * @param string $sortby name of the sorting key ('Uploadzeit', 'Likes', or 'Dislikes')
-     * @param bool $publicOnly show only public posts
-     * @return array Array of Post objects
-     */
-    public function searchImg($searchTerm, $sortby = "", $publicOnly = true)
-    {
-        $postArray = array();
-
-        if ($this->db->errno == 0 && $stmt = $this->db->prepare("CALL searchImg(?, ?, ?)")) {
-            $searchTerm = $this->db->escape_string($searchTerm);
-            $sortby = $this->db->escape_string($sortby);
-
-            $stmt->bind_param("ssi", $searchTerm, $sortby, $publicOnly);
-            $stmt->execute();
-            if ($stmt->errno == 0) {
-                $result = $stmt->get_result();
-                $stmt->close();
-
-                if ($result && $result->num_rows) {
-                    while ($row = $result->fetch_object()) {
-                        $postId = $row->Beitrags_ID;
-                        $tags = $this->getPostTags($postId);
-
-                        array_push($postArray, $this->convertRowToPost($row, $tags));
-                    }
-                }
-                $result->free_result();
-            }
-        }
-        return $postArray;
-    }
 
     
 }

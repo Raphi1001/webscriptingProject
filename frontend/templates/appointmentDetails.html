@@ -1,3 +1,5 @@
+<script src="js/appointmentDetails.js"></script>
+
 <div id="appointmentDetails">
     <div class=text-center>
         <button class="btn btn-dark" onclick="loadAppointmentList()">Go Back</button>
@@ -9,6 +11,16 @@
         </div>
         <div class="card-footer">
             <h5>Comments:</h5>
+            <div id="comments">
+            </div>
+            <h5>Write a Comment</h5>
+            <form name="form" action="#" onsubmit="">
+                <label for="comment">Your Name</label>
+                <input type="text" class="form-control" id="comment" placeholder="Max Mustermann" maxlength="254 " pattern="^[A-Za-z- ' ÄäÖöÜüß]*$" required>
+                <label for="name">Your Message</label>
+                <input type="text" class="form-control" id="name" placeholder="Awesome" maxlength="254 " pattern="^[A-Za-z- ' ÄäÖöÜüß]*$" required>
+                <button class="btn btn-dark">Submit</button>
+            </form>
         </div>
     </div>
 </div>

@@ -18,8 +18,11 @@ class SimpleLogic
             case "queryAppointmentById":
                 $res = $this->dh->queryAppointmentById($param);
                 break;
-            case "queryAppointmentByTitle":
-                $res = $this->dh->queryAppointmentByTitle($param);
+            case "queryCommentByAppId":
+                $res = $this->dh->queryCommentByAppId($param);
+                break;
+            case "getAppointmentList":
+                $res = $this->dh->conn->getAppointmentList();
                 break;
             default:
                 $res = null;
