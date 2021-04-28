@@ -1,28 +1,34 @@
 <div id="newAppointmentForm">
     <div class=text-center>
-        <button class="btn btn-dark" onclick="loadAppointmentList()">Go Back</button>
+        <button type="button" class="btn btn-dark " onclick="loadAppointmentList() ">Go Back</button>
     </div>
-
-    <div class="mb-3">
-        <label for="appointmentTitle" class="form-label">Appointment Title</label>
-        <input type="text" class="form-control" id="appointmentTitle">
-    </div>
-    <div class="mb-3">
-        <label for="appointmentLocation" class="form-label">Location</label>
-        <input type="text" class="form-control" id="appointmentLocation">
-    </div>
-    <div class="mb-3">
-        <label for="appointmentExpiryDate" class="form-label">Expiry Date</label>
-        <input type="date" class="form-control" id="appointmentExpiryDate">
-    </div>
-    <div id="dateGroup">
-        <div class="mb-1 appointmentDateOption">
-            <label for="appointmentDateOption-1" class="form-label">Date Options</label>
-            <input type="date" class="form-control" id="appointmentDateOption-1">
+    <form name="form" action="#" onsubmit="submitNewAppointmentForm()">
+        <div class="mb-3 " id="appointmentTitleDiv">
+            <label for="appointmentTitle" class="form-label ">Appointment Title</label>*
+            <input type="text " class="form-control " id="appointmentTitle" maxlength="254 " pattern="^[A-Za-z- ' ÄäÖöÜüß]*$" required>
         </div>
-    </div>
-    <button class="btn btn-dark" onclick="addDate()">Add Another Date</button>
-    <div class="text-center">
-        <button class="btn btn-primary">Submsit</button>
-    </div>
+        <div class="mb-3" id="appointmentLocationDiv">
+            <label for="appointmentLocation" class="form-label">Location</label>*
+            <input type="text" class="form-control" id="appointmentLocation" maxlength="254 " pattern="^[A-Za-z- ' ÄäÖöÜüß]*$" required>
+        </div>
+        <div class="mb-3" id="appointmentDescriptionDiv">
+            <label for="appointmentDescription" class="form-label">Description</label>*
+            <textarea class="form-control" rows="3" id="appointmentDescription" maxlength="254 " pattern="^[A-Za-z- ' ÄäÖöÜüß]*$" required></textarea>
+        </div>
+        <div class="mb-3" id="appointmentExpiryDateDiv">
+            <label for="appointmentExpiryDate" class="form-label">Expiry Date</label>*
+            <input type="date" class="form-control" id="appointmentExpiryDate" required>
+        </div>
+        <div id="appointmentDateOptionGroup">
+            <div class="mb-1">
+                <label for="appointmentDateOption-1" class="form-label">Date Voting Options</label>
+                <input type="date" class="form-control appointmentDateOption" id="appointmentDateOption-1 ">
+            </div>
+        </div>
+        <button type="button" class="btn btn-sm btn-dark " onclick="addDate()">Add Another Date</button>
+
+        <div class="text-center ">
+            <button type="submit" class="btn btn-dark">Submit</button>
+        </div>
+    </form>
 </div>

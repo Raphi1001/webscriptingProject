@@ -1,4 +1,12 @@
 <?php
+
+include "../models/appointment.php";
+include "../models/comments.php";
+include "../models/dates.php";
+include "../models/participation.php";
+include "../models/user.php";
+include "../models/votes.php";
+
 class DB
 {
     protected $host;
@@ -36,18 +44,46 @@ class DB
      */
     public function connect()
     {
+        
         if ($this->db->connect($this->host, $this->username, $this->passwd, $this->dbname) === false) {
             Alert::echoAlert("Ein Fehler ist aufgetreten: Bitte überprüfen Sie Ihre Datenbank anbindung!", false);
             exit;
         }
+        
     }
 
     /**
-     * Closes a database connection
+     * Closes a database connection much wow
      */
     public function disconnect()
     {
         $this->db->close();
+    }
+
+
+    /**
+     * Returns a list of all Users as an array of User objects
+     * 
+     * @return array Array of User objects
+     */
+    public function getAppointmentList()
+    {
+        $appointmentArray = array();
+        if ($this->db->connect_errno == 0) {
+            $query = "SELECT * FROM appointments ORDER BY app_id DESC;";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            //$result = $stmt->fetch(); alte code lol
+
+            if ($result && $result->num_rows) {
+                while ($row = $result->fetch_object()) {
+                    array_push($appointmentArray, $row);
+                }
+            }
+            $result->free_result();
+        }
+        return $appointmentArray;
     }
 
     /**
@@ -73,8 +109,10 @@ class DB
         return $userArray;
     }
 
+
+
     /**
-     * Returns the Username
+     * Returns the Username pow
      * 
      * @param int $userid UserId
      * @return string Username
@@ -1152,29 +1190,5 @@ class DB
         return $postArray;
     }
 
-    /**
-     * Searches users, returns an array of User objects
-     * 
-     * @return array Array of User objects
-     */
-    public function searchUser($searchTerm)
-    {
-        $userArray = array();
-        if ($this->db->connect_errno == 0) {
-            $stmt = $this->db->prepare("CALL searchUser(?)");
-            $stmt->bind_param("s", $searchTerm);
-            $stmt->execute();
-            if ($stmt->errno == 0) {
-                $result = $stmt->get_result();
-
-                if ($result && $result->num_rows) {
-                    while ($row = $result->fetch_object()) {
-                        array_push($userArray, $this->convertRowToUser($row));
-                    }
-                }
-                $result->free_result();
-            }
-        }
-        return $userArray;
-    }
+    
 }

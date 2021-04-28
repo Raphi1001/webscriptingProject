@@ -14,3 +14,16 @@
 .dateOption {
     margin-bottom: 0.2em;
 }
+
+.noJs {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+}
+
+.error::after {
+    content: "Please select at least one Date Option";
+    color: red;
+    display: block;
+}
