@@ -1,11 +1,12 @@
 <?php
-
+/*
 include_once "./models/appointment.php";
 include_once "./models/comments.php";
 include_once "./models/dates.php";
 include_once "./models/participation.php";
 include_once "./models/user.php";
 include_once "./models/votes.php";
+*/
 
 class DB
 {
@@ -44,11 +45,7 @@ class DB
      */
     public function connect()
     {
-        
-        if ($this->db->connect($this->host, $this->username, $this->passwd, $this->dbname) === false) {
-            return NULL;
-        }
-        
+        $this->db->connect($this->host, $this->username, $this->passwd, $this->dbname);
     }
 
     /**
@@ -67,30 +64,21 @@ class DB
      */
     public function getAppointmentList()
     {
-        $appointmentArray = array();
-        if ($this->db->connect_errno == 0) {
-            $query = "SELECT * FROM appointments ORDER BY app_id DESC;";
-            $stmt = $this->db->prepare($query);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            var_dump($result);
-            return $result;
-            //$result = $stmt->fetch(); alte code lol
-            /*
-            if ($result && $result->num_rows) {
-                while ($row = $result->fetch_object()) {
-                    array_push($appointmentArray, $row);
-                }
-            }
-            $result->free_result();
-        */}
-        return $appointmentArray;
-        
+        $sql = "SELECT * FROM appointments";
 
+        $result = $this->db->query($sql);
+
+        $data = array();
+        // output data of each row
+        while ($row = $result->fetch_assoc()) {
+            array_push($data, new Appointment($row["app_id"], $row["title"], $row["location"], $row["description"], $row["vote_expire"], $row["creator_name"]));
+        }
+        return $data;
     }
 
 
-    public function createAppointment($title, $location, $description, $vote_expire, $creator_name) {
+    public function createAppointment($title, $location, $description, $vote_expire, $creator_name)
+    {
         $query = "INSERT INTO appointments('title', 'location', 'description', 'vote_expire', 'creator_name') VALUES(?,?,?,?,?);";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("sssss", $title, $location, $description, $vote_expire, $creator_name);
@@ -101,7 +89,8 @@ class DB
 
 
 
-    public function createComment($creator_name, $app_id, $comment){
+    public function createComment($creator_name, $app_id, $comment)
+    {
         $query = "INSERT INTO comments('creator_name', 'appointment_id', 'comment') VALUES(?,?,?);";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("sis", $creator_name, $app_id, $comment);
@@ -110,7 +99,8 @@ class DB
     }
 
 
-    public function createVote($vote_name, $date_id){
+    public function createVote($vote_name, $date_id)
+    {
         $query = "INSERT INTO votes('vote_name', 'date_id') VALUES(?,?);";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("si", $vote_name, $date_id);
@@ -119,7 +109,8 @@ class DB
     }
 
 
-    public function createDate($date, $app_id){
+    public function createDate($date, $app_id)
+    {
         $query = "INSERT INTO dates('date', 'appointment_id') VALUES(?,?);";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("si", $name, $app_id);
@@ -127,7 +118,8 @@ class DB
         //no result lol 
     }
 
-    public function createParticipation($participator_name, $app_id){
+    public function createParticipation($participator_name, $app_id)
+    {
         $query = "INSERT INTO participation('participator_name', 'appointment_id') VALUES(?,?);";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("si", $participator_name, $app_id);
@@ -136,7 +128,7 @@ class DB
     }
 
 
-    
+
 
 
 
@@ -164,7 +156,7 @@ class DB
         return $uname;
     }
 
-    
+
 
     /**
      * Checks if email already exists
@@ -210,9 +202,9 @@ class DB
         return false;
     }
 
-   
 
-    
+
+
 
     /**
      * Updates password of a user
@@ -240,7 +232,7 @@ class DB
         return false;
     }
 
-    
+
 
     /**
      * Deletes User from database
@@ -298,7 +290,7 @@ class DB
         return $array;
     }
 
-    
+
 
     /**
      * Inserts Comment into the database
@@ -328,9 +320,9 @@ class DB
         return false;
     }
 
-    
 
-    
+
+
 
     /**
      * Updates Comment in database
@@ -379,10 +371,10 @@ class DB
         return false;
     }
 
-  
-   
 
-    
+
+
+
 
     /**
      * Returns a list of all Tags from a Post
@@ -407,9 +399,9 @@ class DB
         return $tags;
     }
 
-    
 
-    
+
+
 
     /**
      * Inserts Post into the database
@@ -591,7 +583,7 @@ class DB
         return false;
     }
 
-      /**
+    /**
      * Removes dislike
      * 
      * @param int $postId Beitrags_ID
@@ -612,7 +604,7 @@ class DB
         return false;
     }
 
-     /**
+    /**
      * Removes all likes from a post
      * 
      * @param int $postId Beitrags_ID
@@ -724,9 +716,4 @@ class DB
         }
         return false;
     }
-
-    
-
-
-    
 }

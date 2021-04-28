@@ -1,6 +1,6 @@
 <?php
-include_once "./models/appointment.php";
-include "./db/db.php";
+include_once "models/appointment.php";
+include_once "db/db.php";
 class DataHandler
 {
     public $conn;
@@ -8,12 +8,12 @@ class DataHandler
 
     public function __construct()
     {
-        $this->conn = new DB("localhost","bif2webscriptinguser","bif2021","webscript_project");
+        $this->conn = new DB("localhost", "bif2webscriptinguser", "bif2021", "webscript_project");
     }
 
     public function queryAppointment()
     {
-        $res =  $this->getDemoData();
+        $res =  $this->conn->getAppointmentList();
         return $res;
     }
 

@@ -6,17 +6,16 @@ $method = "";
 
 isset($_GET["method"]) ? $method = $_GET["method"] : false;
 isset($_GET["param"]) ? $param = $_GET["param"] : false;
-http_response_code(200);
-echo (7);
-/*
+
 $logic = new SimpleLogic();
 $result = $logic->handleRequest($method, $param);
+
 if ($result == null) {
     response("GET", 400, null);
 } else {
     response("GET", 200, $result);
 }
-*/
+
 function response($method, $httpStatus, $data)
 {
     header('Content-Type: application/json');
@@ -30,4 +29,3 @@ function response($method, $httpStatus, $data)
             echo ("Method not supported yet!");
     }
 }
-
