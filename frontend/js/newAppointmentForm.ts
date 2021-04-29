@@ -12,7 +12,7 @@ function submitNewAppointmentForm() {
     newAppointmentDetails[1] = $("#appointmentLocation").val();
     newAppointmentDetails[2] = $("#appointmentDescription").val();
     newAppointmentDetails[3] = $("#appointmentExpiryDate").val();
-    newAppointmentDetails[4] = $("#appointmentAuthor").val();;
+    newAppointmentDetails[4] = $("#appointmentAuthor").val();
     
     var appointmentDateOptions = $(".appointmentDateOption")
     var appointmentDateOptionsArr = [];

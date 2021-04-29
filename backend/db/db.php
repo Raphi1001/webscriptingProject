@@ -106,9 +106,9 @@ class DB
         }
         $result->free_result();
         return $appointmentArray;
-    } 
+    }
 
-    
+
 
 
     public function getDatesByAppId($app_id)
@@ -149,18 +149,20 @@ class DB
     {
         if ($this->db->errno != 0) return false;
 
-        $votes = 0;
-        $result = $this->db->query("SELECT COUNT(*) FROM votes WHERE date_id = $date_id;");
+        $votes = array();
+        $result = $this->db->query("SELECT * FROM votes WHERE date_id = $date_id;");
         if (!$result || !$result->num_rows) {
             $result->free_result();
             return false;
         }
-        $votes = $result->fetch_assoc();
+        while ($row = $result->fetch_assoc()) {
+            array_push($votes, new Votes($row["vote_id"], $row["vote_name"], $row["date_id"]));
+        }
         $result->free_result();
-        return $votes['COUNT(*)'];
+        return $votes;
     }
 
-    
+
     public function checkVotesOnName($app_id, $vote_name)
     {
         if ($this->db->errno != 0) return false;
@@ -174,9 +176,8 @@ class DB
         $votes = $result->fetch_assoc();
         $result->free_result();
         return $votes['COUNT(*)'];
-
     }
-    
+
     public function getVotesByName($vote_name, $app_id)
     {
         if ($this->db->errno != 0) return false;
@@ -212,7 +213,7 @@ class DB
     }
 
 
-    public function deleteAppointment ($app_id)
+    public function deleteAppointment($app_id)
     {
         if ($this->db->errno != 0) return false;
 
@@ -227,7 +228,22 @@ class DB
         return true;
     }
 
-    public function deleteDate ($app_id)
+    public function deleteComment($app_id)
+    {
+        if ($this->db->errno != 0) return false;
+
+        $stmt = $this->db->prepare("DELETE FROM comments WHERE appointment_id = ?;");
+        if (!$stmt) return false;
+
+        $stmt->bind_param("i", $app_id);
+        $stmt->execute();
+
+        if ($stmt->errno != 0) return false;
+
+        return true;
+    }
+
+    public function deleteDate($app_id)
     {
         if ($this->db->errno != 0) return false;
 
@@ -242,7 +258,7 @@ class DB
         return true;
     }
 
-    public function deleteVotes ($app_id)
+    public function deleteVotes($app_id)
     {
         if ($this->db->errno != 0) return false;
 
@@ -331,19 +347,38 @@ class DB
 
     public function createDate($date, $app_id)
     {
+        if ($this->db->errno != 0) return false;
+
         $query = "INSERT INTO dates('date', 'appointment_id') VALUES(?,?);";
         $stmt = $this->db->prepare($query);
-        $stmt->bind_param("si", $name, $app_id);
+
+        if (!$stmt) return false;
+
+        $stmt->bind_param("si", $date, $app_id);
         $stmt->execute();
-        //no result lol 
+
+        if ($stmt->errno != 0) return false;
+
+        return true;
     }
 
+
+    /* this isn´t used at all lol
     public function createParticipation($participator_name, $app_id)
     {
+        if ($this->db->errno != 0) return false;
+
         $query = "INSERT INTO participation('participator_name', 'appointment_id') VALUES(?,?);";
         $stmt = $this->db->prepare($query);
+
+        if (!$stmt) return false;
+
         $stmt->bind_param("si", $participator_name, $app_id);
         $stmt->execute();
-        //no result lol 
-    }
+
+        if ($stmt->errno != 0) return false;
+
+        return true;
+       
+    } */
 }

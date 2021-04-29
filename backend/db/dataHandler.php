@@ -72,6 +72,20 @@ class DataHandler
         return $res;
     }
 
+    public function deleteAppointment($appId)
+    {
+        $res1 = $this->conn->deleteVotes($appId);
+        $res2 = $this->conn->deleteDate($appId);
+        $res3 = $this->conn->deleteComment($appId);
+        $res4 = $this->conn->deleteAppointment($appId);
+        if($res1!=true||$res2!=true||$res3!=true||$res4!=true){
+            $res = false;
+        } else {
+            $res = true;
+        }
+
+        return $res;
+    }
 
     public function queryAppointmentVotes($appId)
     {

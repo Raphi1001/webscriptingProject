@@ -17,26 +17,6 @@ function callAppointmentDetailsData(appId) {
         }
     });
 }
-function callAppointmentCommentsData(appId) {
-    $.ajax({
-        type: "GET",
-        url: "../backend/serviceHandler.php",
-        cache: false,
-        data: { method: "queryCommentByAppId", param: appId },
-        dataType: "json",
-        success: function (result) {
-            //console.log(result);
-            $("#comments").empty();
-            for (var i = 0; i < result.length; ++i) {
-                $("#comments").append("<p><strong>" + result[i].creator_name + ":</strong> " + result[i].comment + "</p>");
-            }
-            ;
-        },
-        error: function () {
-            console.log("error");
-        }
-    });
-}
 function callAppointDateOptionsData(appId) {
     $.ajax({
         type: "GET",
@@ -67,8 +47,8 @@ function callSingleDateVoteCountData(date_id) {
         data: { method: "queryVoteCountByDateId", param: date_id },
         dataType: "json",
         success: function (result) {
-            // console.log(result);
-            $("#voteCount").append('<td>' + result + '</td>');
+            console.log(result);
+            $("#voteCount").append('<td>' + result.length + '</td>');
         },
         error: function () {
             console.log("error");
@@ -101,6 +81,7 @@ function callUserVotes(username, app_id, dateCount) {
         data: { method: "queryUserVotes", param: username, param2: app_id },
         dataType: "json",
         success: function (result) {
+            //console.log(dateCount);
             $("tbody").append('<tr id="' + result[0].vote_name + '"><th scope="row">' + result[0].vote_name + '</th></tr>');
             for (var i = 0; i < dateCount.length; ++i) {
                 var found = false;
@@ -157,6 +138,7 @@ function insertVote(username, date_id) {
         dataType: "json",
         success: function (result) {
             console.log(result);
+            loadAppointmentList();
         },
         error: function () {
             console.log("error");
@@ -182,6 +164,42 @@ function insertComment(newCommentDetails) {
         dataType: "json",
         success: function (result) {
             callAppointmentCommentsData(newCommentDetails[1]);
+        },
+        error: function () {
+            console.log("error");
+        }
+    });
+}
+function callAppointmentCommentsData(appId) {
+    $.ajax({
+        type: "GET",
+        url: "../backend/serviceHandler.php",
+        cache: false,
+        data: { method: "queryCommentByAppId", param: appId },
+        dataType: "json",
+        success: function (result) {
+            //console.log(result);
+            $("#comments").empty();
+            for (var i = 0; i < result.length; ++i) {
+                $("#comments").append("<p><strong>" + result[i].creator_name + ":</strong> " + result[i].comment + "</p>");
+            }
+            ;
+        },
+        error: function () {
+            console.log("error");
+        }
+    });
+}
+function deleteAppointment(appId) {
+    $.ajax({
+        type: "GET",
+        url: "../backend/serviceHandler.php",
+        cache: false,
+        data: { method: "deleteAppointment", param: appId },
+        dataType: "json",
+        success: function (result) {
+            //console.log(result);
+            loadAppointmentList();
         },
         error: function () {
             console.log("error");

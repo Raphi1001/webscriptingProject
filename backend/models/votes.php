@@ -35,7 +35,7 @@ class Votes {
         } else {
             $value = $this->checkInput($value);
 
-            if (!preg_match('/^[a-z0-9 .\-]+$/i', $value)) {
+            if (!preg_match('/^[a-z0-9.\-]+$/i', $value)) {
                 $err = "Bitte geben Sie nur Buchstaben oder Zahlen ein";
             } else if ($this->sizeCheck($value) != true) {
                 $err = "Die eingegebenen Daten sind zu lang";

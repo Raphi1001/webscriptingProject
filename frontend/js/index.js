@@ -10,6 +10,7 @@ function loadNewAppointmentForm() {
 function loadAppointmentDetails(appId) {
     $("#pageContent").load("templates/appointmentDetails.html", function () {
         $("#commentForm").attr("onsubmit", "submitNewCommentForm(" + appId + ")");
+        $("#delBtn").attr("onclick", "deleteAppointment(" + appId + ")");
         callAppointmentDetailsData(appId);
         callAppointmentCommentsData(appId);
         callAppointDateOptionsData(appId);

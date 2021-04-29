@@ -43,8 +43,9 @@ class SimpleLogic
             case "insertVote":
                 $res = $this->dh->insertVote($param, $param2);
                 break;
-
-
+            case "deleteAppointment":
+                $res = $this->dh->deleteAppointment($param);
+                break;
             case "queryVotesByDateId":
                 $res = $this->dh->queryVotesByDateId($param);
                 break;
