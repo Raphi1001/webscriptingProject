@@ -38,18 +38,36 @@ function callAppointmentCommentsData(appId: number) {
     });
 }
 
+function callAppointDatesData(appId: number) {
+    $.ajax({
+        type: "GET",
+        url: "../backend/serviceHandler.php",
+        cache: false,
+        data: { method: "queryDatesByAppId", param: appId },
+        dataType: "json",
+        success: function (result: any[]) {
+            for (var i = 0; i < result.length; ++i) {
+                $("#allDateOptions").append('<th scope="col">' + result[i].date + '</th>');
+                callAppointmentDateVoteData(result[i].date_id);
+            };
+        },
+        error: function () {
+            console.log("error");
+        }
+    });
+}
 
 
-function callAppointmentDateVoteData(appId: number) {
-    for (var i = 0; i < 10; ++i) {
-        var date = "0" + i + ".04.2021";
-        var voteCount = 3 * i;
-        $("#allDateOptions").append('<div class="col-sm-12 col-md-4 col-lg-3 d-flex my-3 justify-content-center"><div class="card text-center"><div class="card-body"><h5 class="card-title">Date: '+ date +'</h5><button class="btn btn-dark">Vote</button><p class="card-text"><strong>Votes: </strong>' + voteCount + '</p><ul id="votes' + i + '" class="text-start"></ul></div></div></div>');
-        for(var u = 0; u < 4; ++u)
-        {
-            $("#votes" + i).append('<li>Harry</li>');
-        }   
-    };
+function callAppointmentDateVoteData(date_id: number) {
+
+    for (var i = 0; i < 3; ++i) {
+        $("#allDateOptions").append('<th scope="col">25.0' + i + '.1998</th>');
+        $("#voteCount").append('<td>' + 3 * i + '</td>');
+    }
+
+    $("tbody").append('<tr><th scope="row">Georg</th><td><input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" disabled></td><td><input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" disabled></td><td><input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" disabled></td></tr>');
+
+    $("tbody").append('<tr><th scope="row">Harty</th><td><input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" disabled></td><td><input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" disabled></td><td><input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" disabled></td></tr>');
 }
 
 

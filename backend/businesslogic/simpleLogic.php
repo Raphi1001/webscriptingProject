@@ -27,6 +27,9 @@ class SimpleLogic
             case "insertComment":
                 $res = $this->dh->insertComment($param);
                 break;
+            case "queryDatesByAppId":
+                $res = $this->dh->queryDatesByAppId($param);
+                break;
             default:
                 $res = null;
                 break;

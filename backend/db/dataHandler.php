@@ -1,6 +1,8 @@
 <?php
 include_once "models/appointment.php";
 include_once "models/comments.php";
+include_once "models/dates.php";
+include_once "models/votes.php";
 include_once "db/db.php";
 class DataHandler
 {
@@ -56,6 +58,12 @@ class DataHandler
         )   return false;
 
         $res =  $this->conn->createComment($newComment);
+        return $res;
+    }
+
+    public function queryDatesByAppId($appId)
+    {
+        $res =  $this->conn->getDatesByAppId($appId);
         return $res;
     }
 }
