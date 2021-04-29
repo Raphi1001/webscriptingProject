@@ -26,7 +26,7 @@ function callAppointmentCommentsData(appId: number) {
         data: { method: "queryCommentByAppId", param: appId },
         dataType: "json",
         success: function (result: any[]) {
-            console.log(result);
+            //console.log(result);
             $("#comments").empty();
             for (var i = 0; i < result.length; ++i) {
                 $("#comments").append("<p><strong>" + result[i].creator_name + ":</strong> " + result[i].comment + "</p>");
@@ -38,7 +38,7 @@ function callAppointmentCommentsData(appId: number) {
     });
 }
 
-function callAppointDatesData(appId: number) {
+function callAppointDateOptionsData(appId: number) {
     $.ajax({
         type: "GET",
         url: "../backend/serviceHandler.php",
@@ -46,10 +46,86 @@ function callAppointDatesData(appId: number) {
         data: { method: "queryDatesByAppId", param: appId },
         dataType: "json",
         success: function (result: any[]) {
+            //console.log(result);
             for (var i = 0; i < result.length; ++i) {
                 $("#allDateOptions").append('<th scope="col">' + result[i].date + '</th>');
-                callAppointmentDateVoteData(result[i].date_id);
+                $("#inputRow").append('<td><input class="form-check-input dateSelection" type="checkbox" value="' + result[i].date_id + '"></td>');
+
+                callSingleDateVoteCountData(result[i].date_id)
             };
+
+            callAppointmentVoteNamesData(appId, result);
+        },
+        error: function () {
+            console.log("error");
+        }
+    });
+}
+
+function callSingleDateVoteCountData(date_id: number) {
+
+    $.ajax({
+        type: "GET",
+        url: "../backend/serviceHandler.php",
+        cache: false,
+        data: { method: "queryVoteCountByDateId", param: date_id },
+        dataType: "json",
+        success: function (result: any[]) {
+            // console.log(result);
+
+            $("#voteCount").append('<td>' + result + '</td>');
+        },
+        error: function () {
+            console.log("error");
+        }
+    });
+}
+
+function callAppointmentVoteNamesData(app_id: number, dateCount: any) { /* Hier */
+
+    $.ajax({
+        type: "GET",
+        url: "../backend/serviceHandler.php",
+        cache: false,
+        data: { method: "queryAppointmentVotes", param: app_id },
+        dataType: "json",
+        success: function (result: any[]) {
+            //console.log(result);
+            for (var i = 0; i < result.length; ++i) {
+                callUserVotes(result[i], app_id, dateCount);
+            }
+        },
+        error: function () {
+            console.log("error");
+        }
+    });
+}
+
+function callUserVotes(username: string, app_id: number, dateCount: any) {
+
+    $.ajax({
+        type: "GET",
+        url: "../backend/serviceHandler.php",
+        cache: false,
+        data: { method: "queryUserVotes", param: username, param2: app_id },
+        dataType: "json",
+        success: function (result: any[]) {
+            $("tbody").append('<tr id="' + result[0].vote_name + '"><th scope="row">' + result[0].vote_name + '</th></tr>');
+            for (var i = 0; i < dateCount.length; ++i) {
+                var found = false
+                for (var u = 0; u < result.length; ++u) {
+                    if (result[u].date_id == dateCount[i].date_id) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) {
+                    $("#" + result[0].vote_name).append('<td><input class="form-check-input" type="checkbox" checked disabled></td>')
+                }
+                else {
+                    $("#" + result[0].vote_name).append('<td><input class="form-check-input" type="checkbox" disabled></td>')
+                }
+            }
         },
         error: function () {
             console.log("error");
@@ -58,16 +134,61 @@ function callAppointDatesData(appId: number) {
 }
 
 
+
+
+
 function callAppointmentDateVoteData(date_id: number) {
 
-    for (var i = 0; i < 3; ++i) {
-        $("#allDateOptions").append('<th scope="col">25.0' + i + '.1998</th>');
-        $("#voteCount").append('<td>' + 3 * i + '</td>');
+    $.ajax({
+        type: "GET",
+        url: "../backend/serviceHandler.php",
+        cache: false,
+        data: { method: "queryVotesByDateId", param: date_id },
+        dataType: "json",
+        success: function (result: any[]) {
+            // console.log(result);
+        },
+        error: function () {
+            console.log("error");
+        }
+    });
+}
+
+
+
+
+
+
+function submitVoteForm() {
+    var newVoteDetails = [];
+    var username = $("#voteUserName").val();
+    var checkBoxes = $(".dateSelection");
+    for (var i = 0; i < checkBoxes.length; ++i) {
+        if ($(checkBoxes[i]).is(':checked')) {
+            insertVote(username, $(checkBoxes[i]).val());
+        }
     }
+}
 
-    $("tbody").append('<tr><th scope="row">Georg</th><td><input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" disabled></td><td><input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" disabled></td><td><input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" disabled></td></tr>');
 
-    $("tbody").append('<tr><th scope="row">Harty</th><td><input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" disabled></td><td><input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" disabled></td><td><input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" disabled></td></tr>');
+
+function insertVote(username:any, date_id: any) {
+
+    $.ajax({
+        type: "GET",
+        url: "../backend/serviceHandler.php",
+        cache: false,
+        data: { method: "insertVote", param: username, param2: date_id },
+        dataType: "json",
+        success: function (result: any[]) {
+            console.log(result)
+        },
+        error: function () {
+            console.log("error");
+
+        }
+    });
+
 }
 
 

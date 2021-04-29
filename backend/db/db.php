@@ -77,7 +77,7 @@ class DB
 
         $appointmentArray = array();
 
-        $result = $this->db->query("SELECT * FROM appointments WHERE app_id = $app_id ");
+        $result = $this->db->query("SELECT * FROM appointments WHERE app_id = $app_id");
         if (!$result || !$result->num_rows) {
             $result->free_result();
             return false;
@@ -95,7 +95,7 @@ class DB
         if ($this->db->errno != 0) return false;
 
         $appointmentArray = array();
-        $result = $this->db->query("SELECT * FROM comments WHERE appointment_id = $app_id");
+        $result = $this->db->query("SELECT * FROM comments WHERE appointment_id = $app_id ORDER BY comment_id DESC");
         if (!$result || !$result->num_rows) {
             $result->free_result();
             return false;
@@ -106,7 +106,9 @@ class DB
         }
         $result->free_result();
         return $appointmentArray;
-    }
+    } 
+
+    
 
 
     public function getDatesByAppId($app_id)
@@ -126,18 +128,18 @@ class DB
         return $datesArray;
     }
 
-    public function getVoteListByAppId($app_id)
+    public function getVotesByDateId($date_id)
     {
-        if ($this->db->erno != 0) return false;
+        if ($this->db->errno != 0) return false;
 
         $datesArray = array();
-        $result = $this->db->query("SELECT * FROM votes WHERE appointment_id = $app_id;");
+        $result = $this->db->query("SELECT * FROM votes WHERE date_id = $date_id");
         if (!$result || !$result->num_rows) {
             $result->free_result();
             return false;
         }
         while ($row = $result->fetch_assoc()) {
-            array_push($datesArray, new Dates($row["date_id"], $row["date"], $row["appointment_id"]));
+            array_push($datesArray, new Votes($row["vote_id"], $row["vote_name"], $row["date_id"]));
         }
         $result->free_result();
         return $datesArray;
@@ -145,7 +147,7 @@ class DB
 
     public function countVotesByDateId($date_id)
     {
-        if ($this->db->erno != 0) return false;
+        if ($this->db->errno != 0) return false;
 
         $votes = 0;
         $result = $this->db->query("SELECT COUNT(*) FROM votes WHERE date_id = $date_id;");
@@ -155,26 +157,105 @@ class DB
         }
         $votes = $result->fetch_assoc();
         $result->free_result();
-        return $votes;
+        return $votes['COUNT(*)'];
     }
 
     
     public function checkVotesOnName($app_id, $vote_name)
     {
-        if ($this->db->erno != 0) return false;
+        if ($this->db->errno != 0) return false;
 
         $votes = 0;
-        $result = $this->db->query("SELECT COUNT(*) FROM votes v JOIN dates d ON d.date_id=v.date_id WHERE vote_name = $vote_name AND appointment_id = $app_id;");
+        $result = $this->db->query("SELECT COUNT(*) FROM votes v JOIN dates d ON d.date_id=v.date_id WHERE vote_name = '$vote_name' AND appointment_id = $app_id;");
         if (!$result || !$result->num_rows) {
             $result->free_result();
             return false;
         }
         $votes = $result->fetch_assoc();
         $result->free_result();
-        return $votes;
+        return $votes['COUNT(*)'];
 
     }
     
+    public function getVotesByName($vote_name, $app_id)
+    {
+        if ($this->db->errno != 0) return false;
+
+        $votesArray = array();
+        $result = $this->db->query("SELECT * FROM votes v JOIN dates d ON d.date_id=v.date_id WHERE vote_name = '$vote_name' AND appointment_id = $app_id;");
+        if (!$result || !$result->num_rows) {
+            $result->free_result();
+            return false;
+        }
+        while ($row = $result->fetch_assoc()) {
+            array_push($votesArray, new Votes($row["vote_id"], $row["vote_name"], $row["date_id"]));
+        }
+        $result->free_result();
+        return $votesArray;
+    }
+
+    public function getNamesVotedByAppointment($app_id)
+    {
+        if ($this->db->errno != 0) return false;
+
+        $namesArray = array();
+        $result = $this->db->query("SELECT DISTINCT vote_name FROM votes v JOIN dates d ON d.date_id=v.date_id WHERE appointment_id = $app_id;");
+        if (!$result || !$result->num_rows) {
+            $result->free_result();
+            return false;
+        }
+        while ($row = $result->fetch_assoc()) {
+            array_push($namesArray, $row["vote_name"]);
+        }
+        $result->free_result();
+        return $namesArray;
+    }
+
+
+    public function deleteAppointment ($app_id)
+    {
+        if ($this->db->errno != 0) return false;
+
+        $stmt = $this->db->prepare("DELETE FROM appointments WHERE app_id = ?;");
+        if (!$stmt) return false;
+
+        $stmt->bind_param("i", $app_id);
+        $stmt->execute();
+
+        if ($stmt->errno != 0) return false;
+
+        return true;
+    }
+
+    public function deleteDate ($app_id)
+    {
+        if ($this->db->errno != 0) return false;
+
+        $stmt = $this->db->prepare("DELETE FROM dates WHERE appointment_id = ?;");
+        if (!$stmt) return false;
+
+        $stmt->bind_param("i", $app_id);
+        $stmt->execute();
+
+        if ($stmt->errno != 0) return false;
+
+        return true;
+    }
+
+    public function deleteVotes ($app_id)
+    {
+        if ($this->db->errno != 0) return false;
+
+        $stmt = $this->db->prepare("DELETE v FROM votes v JOIN dates d ON v.date_id = d.date_id WHERE appointment_id = ?;");
+        if (!$stmt) return false;
+
+        $stmt->bind_param("i", $app_id);
+        $stmt->execute();
+
+        if ($stmt->errno != 0) return false;
+
+        return true;
+    }
 
 
     /*
@@ -233,13 +314,18 @@ class DB
     }
 
 
-    public function createVote($vote_name, $date_id)
+    public function createVote($newVote)
     {
-        $query = "INSERT INTO votes('vote_name', 'date_id') VALUES(?,?);";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param("si", $vote_name, $date_id);
+        if ($this->db->errno != 0) return false;
+
+        $stmt = $this->db->prepare("INSERT INTO votes(vote_name, date_id) VALUES (?,?)");
+        if (!$stmt) return false;
+
+        $stmt->bind_param("si", $newVote->vote_name, $newVote->date_id);
         $stmt->execute();
-        //no result lol 
+        if ($stmt->errno != 0) return false;
+
+        return true;
     }
 
 

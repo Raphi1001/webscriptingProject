@@ -9,7 +9,7 @@ class SimpleLogic
         $this->dh = new DataHandler();
     }
 
-    function handleRequest($method, $param)
+    function handleRequest($method, $param, $param2)
     {
         switch ($method) {
             case "queryAppointment":
@@ -29,6 +29,24 @@ class SimpleLogic
                 break;
             case "queryDatesByAppId":
                 $res = $this->dh->queryDatesByAppId($param);
+                break;
+            case "queryVoteCountByDateId":
+                $res = $this->dh->queryVoteCountByDateId($param);
+                break;
+
+            case "queryAppointmentVotes":
+                $res = $this->dh->queryAppointmentVotes($param);
+                break;
+            case "queryUserVotes":
+                $res = $this->dh->queryUserVotes($param, $param2);
+                break;
+            case "insertVote":
+                $res = $this->dh->insertVote($param, $param2);
+                break;
+
+
+            case "queryVotesByDateId":
+                $res = $this->dh->queryVotesByDateId($param);
                 break;
             default:
                 $res = null;

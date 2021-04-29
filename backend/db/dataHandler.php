@@ -66,4 +66,54 @@ class DataHandler
         $res =  $this->conn->getDatesByAppId($appId);
         return $res;
     }
+    public function queryVoteCountByDateId($dateId)
+    {
+        $res =  $this->conn->countVotesByDateId($dateId);
+        return $res;
+    }
+
+
+    public function queryAppointmentVotes($appId)
+    {
+        $res =  $this->conn->getNamesVotedByAppointment($appId);
+        return $res;
+    }
+
+    public function queryUserVotes($username, $appId)
+    {
+        $res =  $this->conn->getVotesByName($username, $appId);
+        return $res;
+    }
+
+
+    public function insertVote($username, $dateId)
+    {
+        $newVote = new Votes(0, $username, $dateId);
+        if (
+            !$newVote->vote_name ||
+            !$newVote->date_id
+        )   return false;
+
+        $res =  $this->conn->createVote($newVote);
+        return $res;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    public function queryVotesByDateId($dateId)
+    {
+        $res =  $this->conn->getVotesByDateId($dateId);
+        return $res;
+    }
+
+
 }

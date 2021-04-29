@@ -13,8 +13,8 @@ function loadAppointmentDetails(appId: number) {
       $("#commentForm").attr("onsubmit", "submitNewCommentForm(" + appId + ")");
       callAppointmentDetailsData(appId);
       callAppointmentCommentsData(appId);
-      callAppointDatesData(appId);
-      callAppointmentDateVoteData(appId);
+      callAppointDateOptionsData(appId);
+     // callAppointmentVoteNamesData(appId);
    });
 }
 
