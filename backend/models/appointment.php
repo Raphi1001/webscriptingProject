@@ -1,6 +1,7 @@
 <?php
 
-class Appointment {
+class Appointment
+{
 
     public $app_id;
     public $title;
@@ -13,15 +14,45 @@ class Appointment {
     function __construct($app_id, $title, $location, $description, $vote_expire, $creator_name)
     {
         $this->app_id = $app_id;
-        $this->title = $title;
-        $this->location = $location;
-        $this->description = $description;
-        $this->vote_expire = $vote_expire;
-        $this->creator_name = $creator_name;
+        $this->title = NULL;
+        $this->location = NULL;
+        $this->description = NULL;
+        $this->vote_expire = NULL;
+        $this->creator_name = NULL;
+
+        $this->setValue($title, "title");
+        $this->setValue($location, "location");
+        $this->setValue($description, "description");
+        $this->setValue($vote_expire, "vote_expire");
+        $this->setValue($creator_name, "creator_name");
     }
 
+    function setValue($value, $valueToSet)
+    {
+        $err = NULL;
+        if (empty($value)) {
+            $err = "Bitte füllen Sie alle Felder aus";
+        } else {
+            $value = $this->checkInput($value);
 
+            if (!preg_match('/^[a-z0-9 .\-]+$/i', $value)) {
+                $err = "Bitte geben Sie nur Buchstaben oder Zahlen ein";
+            } else if ($this->sizeCheck($value) != true) {
+                $err = "Die eingegebenen Daten sind zu lang";
+            } else {
+                $this->$valueToSet = $value;
+            }
+        }
+        return $err;
+    }
 
+    private function checkInput($input)
+    {
+        return htmlspecialchars(stripslashes(trim($input)));
+    }
+
+    private function sizeCheck($input)
+    {
+        return strlen($input) < 255;
+    }
 }
-
-?>

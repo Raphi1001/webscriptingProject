@@ -1,13 +1,4 @@
 <?php
-/*
-include_once "./models/appointment.php";
-include_once "./models/comments.php";
-include_once "./models/dates.php";
-include_once "./models/participation.php";
-include_once "./models/user.php";
-include_once "./models/votes.php";
-*/
-
 class DB
 {
     protected $host;
@@ -64,38 +55,85 @@ class DB
      */
     public function getAppointmentList()
     {
-        $sql = "SELECT * FROM appointments";
+        if ($this->db->errno != 0) return false;
 
-        $result = $this->db->query($sql);
-
-        $data = array();
+        $appointmentArray = array();
+        $result = $this->db->query("SELECT * FROM appointments");
+        if (!$result || !$result->num_rows) {
+            $result->free_result();
+            return false;
+        }
         // output data of each row
         while ($row = $result->fetch_assoc()) {
-            array_push($data, new Appointment($row["app_id"], $row["title"], $row["location"], $row["description"], $row["vote_expire"], $row["creator_name"]));
+            array_push($appointmentArray, new Appointment($row["app_id"], $row["title"], $row["location"], $row["description"], $row["vote_expire"], $row["creator_name"]));
         }
-        return $data;
+        $result->free_result();
+        return $appointmentArray;
     }
 
-
-    public function createAppointment($title, $location, $description, $vote_expire, $creator_name)
+    public function getAppointment($app_id)
     {
-        $query = "INSERT INTO appointments('title', 'location', 'description', 'vote_expire', 'creator_name') VALUES(?,?,?,?,?);";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param("sssss", $title, $location, $description, $vote_expire, $creator_name);
-        $stmt->execute();
-        //kein result weil es werden nur daten eingefügt und ja so lala ist das jetzt
-        //pls help
+        if ($this->db->errno != 0) return false;
+
+        $appointmentArray = array();
+
+        $result = $this->db->query("SELECT * FROM appointments WHERE app_id = $app_id ");
+        if (!$result || !$result->num_rows) {
+            $result->free_result();
+            return false;
+        }
+        // output data of each row
+        while ($row = $result->fetch_assoc()) {
+            array_push($appointmentArray, new Appointment($row["app_id"], $row["title"], $row["location"], $row["description"], $row["vote_expire"], $row["creator_name"]));
+        }
+        $result->free_result();
+        return $appointmentArray;
     }
 
-
-
-    public function createComment($creator_name, $app_id, $comment)
+    public function getCommentListByAppId($app_id)
     {
-        $query = "INSERT INTO comments('creator_name', 'appointment_id', 'comment') VALUES(?,?,?);";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param("sis", $creator_name, $app_id, $comment);
+        if ($this->db->errno != 0) return false;
+
+        $appointmentArray = array();
+        $result = $this->db->query("SELECT * FROM comments WHERE appointment_id = $app_id");
+        if (!$result || !$result->num_rows) {
+            $result->free_result();
+            return false;
+        }
+        // output data of each row
+        while ($row = $result->fetch_assoc()) {
+            array_push($appointmentArray, new Comments($row["comment_id"], $row["creator_name"], $row["appointment_id"], $row["comment"]));
+        }
+        $result->free_result();
+        return $appointmentArray;
+    }
+
+    public function createAppointment($newApp)
+    {
+        if ($this->db->errno != 0) return false;
+
+        $stmt = $this->db->prepare("INSERT INTO appointments(title, location, description, vote_expire, creator_name) VALUES (?,?,?,?,?)");
+        if (!$stmt) return false;
+
+        $stmt->bind_param("sssss", $newApp->title, $newApp->location, $newApp->description, $newApp->vote_expire, $newApp->creator_name);
         $stmt->execute();
-        //no result lol 
+        if ($stmt->errno != 0) return false;
+
+        return true;
+    }
+
+    public function createComment($newComment)
+    {
+        if ($this->db->errno != 0) return false;
+
+        $stmt = $this->db->prepare("INSERT INTO comments(creator_name, appointment_id, comment) VALUES (?,?,?)");
+        if (!$stmt) return false;
+
+        $stmt->bind_param("sis", $newComment->creator_name, $newComment->appointment_id, $newComment->comment);
+        $stmt->execute();
+        if ($stmt->errno != 0) return false;
+
+        return true;
     }
 
 

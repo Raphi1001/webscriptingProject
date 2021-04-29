@@ -21,8 +21,11 @@ class SimpleLogic
             case "queryCommentByAppId":
                 $res = $this->dh->queryCommentByAppId($param);
                 break;
-            case "getAppointmentList":
-                $res = $this->dh->conn->getAppointmentList();
+            case "insertAppointment":
+                $res = $this->dh->insertAppointment($param);
+                break;
+            case "insertComment":
+                $res = $this->dh->insertComment($param);
                 break;
             default:
                 $res = null;

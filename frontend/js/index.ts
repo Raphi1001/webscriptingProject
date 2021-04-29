@@ -8,9 +8,11 @@ function loadNewAppointmentForm() {
    $("#pageContent").load("templates/newAppointmentForm.html");
 }
 
-function loadAppointmentDetails(appointmentTitle: number) {
+function loadAppointmentDetails(appId: number) {
    $("#pageContent").load("templates/appointmentDetails.html", function () {
-      callAppointmentDetailsData(appointmentTitle);
+      $("#commentForm").attr("onsubmit", "submitNewCommentForm(" + appId + ")");
+      callAppointmentDetailsData(appId);
+      callAppointmentCommentsData(appId);
    });
 }
 

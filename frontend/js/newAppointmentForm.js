@@ -6,10 +6,13 @@ function addDate() {
     $(newItem).hide().appendTo("#appointmentDateOptionGroup").slideDown(500); //adds new item to list
 }
 function submitNewAppointmentForm() {
-    var appointmentTitle = $("#appointmentTitle").val();
-    var appointmentLocation = $("#appointmentLocation").val();
-    var appointmentDescription = $("#appointmentDescription").val();
-    var appointmentExpiryDate = $("#appointmentExpiryDate").val();
+    var newAppointmentDetails = [];
+    newAppointmentDetails[0] = $("#appointmentTitle").val();
+    newAppointmentDetails[1] = $("#appointmentLocation").val();
+    newAppointmentDetails[2] = $("#appointmentDescription").val();
+    newAppointmentDetails[3] = $("#appointmentExpiryDate").val();
+    newAppointmentDetails[4] = $("#appointmentAuthor").val();
+    ;
     var appointmentDateOptions = $(".appointmentDateOption");
     var appointmentDateOptionsArr = [];
     var found = false;
@@ -26,14 +29,24 @@ function submitNewAppointmentForm() {
         return;
     }
     $("#appointmentDateOptionGroup").removeClass("error");
-    if (!appointmentTitle || !appointmentLocation || !appointmentDescription || !appointmentExpiryDate || !appointmentDateOptionsArr[0]) {
+    newAppointmentDetails[5] = appointmentDateOptionsArr;
+    if (!newAppointmentDetails[0] || !newAppointmentDetails[1] || !newAppointmentDetails[2] || !newAppointmentDetails[3] || !newAppointmentDetails[4] || !newAppointmentDetails[5][0]) {
         return;
     }
-    //use these for database input
-    alert("sucess!");
-    console.log(appointmentTitle);
-    console.log(appointmentLocation);
-    console.log(appointmentDescription);
-    console.log(appointmentExpiryDate);
-    console.log(appointmentDateOptionsArr);
+    insertAppointment(newAppointmentDetails);
+}
+function insertAppointment(newAppointmentDetails) {
+    $.ajax({
+        type: "GET",
+        url: "../backend/serviceHandler.php",
+        cache: false,
+        data: { method: "insertAppointment", param: newAppointmentDetails },
+        dataType: "json",
+        success: function (result) {
+            alert(result);
+        },
+        error: function () {
+            console.log("error");
+        }
+    });
 }
