@@ -38,6 +38,30 @@ class DataHandler
         )   return false;
 
         $res =  $this->conn->createAppointment($newApp);
+        if($res) $res = $this->insertDates($newAppointmentDetails[5]);
+        return $res;
+    }
+
+
+    public function getHighestAppId()
+    {
+        $res = $this->conn->getHighestAppId();
+        return $res;
+    }
+
+    public function insertDates($appointmentDateOptionsArr)
+    {
+        $app_id = $this->getHighestAppId();
+        foreach ($appointmentDateOptionsArr as $dateOption) {
+            $newDate = new Dates(0, $dateOption, $app_id);
+            if (
+                !$newDate->date ||
+                !$newDate->appointment_id
+            )   return false;
+
+            $res =  $this->conn->createDate($newDate);
+            if (!$res) return false;
+        }
         return $res;
     }
 
@@ -78,7 +102,7 @@ class DataHandler
         $res2 = $this->conn->deleteDate($appId);
         $res3 = $this->conn->deleteComment($appId);
         $res4 = $this->conn->deleteAppointment($appId);
-        if($res1!=true||$res2!=true||$res3!=true||$res4!=true){
+        if ($res1 != true || $res2 != true || $res3 != true || $res4 != true) {
             $res = false;
         } else {
             $res = true;
@@ -115,19 +139,9 @@ class DataHandler
 
 
 
-
-
-
-
-
-
-
-
     public function queryVotesByDateId($dateId)
     {
         $res =  $this->conn->getVotesByDateId($dateId);
         return $res;
     }
-
-
 }

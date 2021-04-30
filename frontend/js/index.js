@@ -14,6 +14,5 @@ function loadAppointmentDetails(appId) {
         callAppointmentDetailsData(appId);
         callAppointmentCommentsData(appId);
         callAppointDateOptionsData(appId);
-        // callAppointmentVoteNamesData(appId);
     });
 }

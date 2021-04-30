@@ -14,9 +14,11 @@
 
             <p id="appointmentLocation" class="card-text"><strong>Location: </strong></p>
             <p id="appointmentDescription" class="card-text"><strong>Description: </strong></p>
+            <p id="appointmentExpiryDate" class="card-text"><strong>Expiry Date: </strong></p>
 
 
-            <form id="test" onsubmit="submitVoteForm()">
+
+            <form id="voteForm" onsubmit="submitVoteForm()">
                 <div class="text-end">
                     <button class="btn btn-dark">Submit Vote</button>
                 </div>
@@ -40,9 +42,7 @@
             </table>
         </div>
         <div class="card-footer">
-            <h5>Comments:</h5>
-            <div id="comments">
-            </div>
+
             <h5>Write a Comment</h5>
             <form id="commentForm" action="#" onsubmit="submitNewCommentForm()">
                 <label for="commentAuthor">Your Name</label>
@@ -51,6 +51,9 @@
                 <input type="text" class="form-control" id="commentMessage" placeholder="Awesome" maxlength="254" pattern="^[A-Za-z- ' ÄäÖöÜüß]*$" required>
                 <button class="btn btn-dark">Submit Comment</button>
             </form>
+            <h5>Comments:</h5>
+            <div id="comments">
+            </div>
         </div>
     </div>
 

@@ -71,6 +71,8 @@ class DB
         return $appointmentArray;
     }
 
+
+    //returns the appointment object with the corresponding appointmentID
     public function getAppointment($app_id)
     {
         if ($this->db->errno != 0) return false;
@@ -90,6 +92,8 @@ class DB
         return $appointmentArray;
     }
 
+
+    //returns list of comments from a certain appointment
     public function getCommentListByAppId($app_id)
     {
         if ($this->db->errno != 0) return false;
@@ -110,7 +114,7 @@ class DB
 
 
 
-
+    //returns list of dates in a certain appointment
     public function getDatesByAppId($app_id)
     {
         if ($this->db->errno != 0) return false;
@@ -128,6 +132,8 @@ class DB
         return $datesArray;
     }
 
+
+    //returns list of votes with a certain date
     public function getVotesByDateId($date_id)
     {
         if ($this->db->errno != 0) return false;
@@ -145,6 +151,7 @@ class DB
         return $datesArray;
     }
 
+    //reutns the number of votes on a certain date
     public function countVotesByDateId($date_id)
     {
         if ($this->db->errno != 0) return false;
@@ -162,7 +169,7 @@ class DB
         return $votes;
     }
 
-
+    //returns number of votes depending on name and appointment
     public function checkVotesOnName($app_id, $vote_name)
     {
         if ($this->db->errno != 0) return false;
@@ -178,6 +185,8 @@ class DB
         return $votes['COUNT(*)'];
     }
 
+
+    //returns a list of votes depending on the name and apointment
     public function getVotesByName($vote_name, $app_id)
     {
         if ($this->db->errno != 0) return false;
@@ -195,6 +204,8 @@ class DB
         return $votesArray;
     }
 
+
+    //returns a list of names that have voted under a certain appointment
     public function getNamesVotedByAppointment($app_id)
     {
         if ($this->db->errno != 0) return false;
@@ -212,6 +223,28 @@ class DB
         return $namesArray;
     }
 
+
+    //returns the highest app_id that exists in the database
+    public function getHighestAppId()
+    {
+        if ($this->db->errno != 0) return false;
+
+        $highestId = 0;
+        $result = $this->db->query("SELECT MAX(app_id) FROM appointments;");
+        if (!$result || !$result->num_rows) {
+            $result->free_result();
+            return false;
+        }
+        $row = $result->fetch_assoc();
+    
+        $highestId = $row["MAX(app_id)"];
+
+        $result->free_result();
+        return $highestId;
+    }
+
+
+    //all delete-functions are used, when the "delete"-button is pressed
 
     public function deleteAppointment($app_id)
     {
@@ -274,32 +307,13 @@ class DB
     }
 
 
-    /*
-    //template falls wir noch eine get-query brauchen lol
-    public function getDatesByAppId($app_id) 
-    {
-        if ($this->db->erno != 0) return false;
-
-        $datesArray = array();
-        $result = $this->db->query("SELECT * FROM dates WHERE appointment_id = $app_id;");
-        if (!$result || !$result->num_rows) {
-            $result->free_result();
-            return false;
-        }
-        while ($row = $result->fetch_assoc()) {
-            array_push($datesArray, new Dates($row["date_id"], $row["date"], $row["appointment_id"]));
-        }
-        $result->free_result();
-        return $datesArray;
-
-    }
-    */
+    
 
 
 
 
 
-
+    //create-Funktionen zum erstellen der Dateneinträge
 
     public function createAppointment($newApp)
     {
@@ -345,40 +359,20 @@ class DB
     }
 
 
-    public function createDate($date, $app_id)
+    public function createDate($newDate)
     {
         if ($this->db->errno != 0) return false;
 
-        $query = "INSERT INTO dates('date', 'appointment_id') VALUES(?,?);";
-        $stmt = $this->db->prepare($query);
-
+        $stmt = $this->db->prepare("INSERT INTO dates(date, appointment_id) VALUES (?,?)");
         if (!$stmt) return false;
 
-        $stmt->bind_param("si", $date, $app_id);
+        $stmt->bind_param("si", $newDate->date, $newDate->appointment_id);
         $stmt->execute();
-
         if ($stmt->errno != 0) return false;
 
         return true;
     }
 
 
-    /* this isn´t used at all lol
-    public function createParticipation($participator_name, $app_id)
-    {
-        if ($this->db->errno != 0) return false;
-
-        $query = "INSERT INTO participation('participator_name', 'appointment_id') VALUES(?,?);";
-        $stmt = $this->db->prepare($query);
-
-        if (!$stmt) return false;
-
-        $stmt->bind_param("si", $participator_name, $app_id);
-        $stmt->execute();
-
-        if ($stmt->errno != 0) return false;
-
-        return true;
-       
-    } */
+    
 }

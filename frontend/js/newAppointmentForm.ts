@@ -6,6 +6,7 @@ function addDate() {
     $(newItem).hide().appendTo("#appointmentDateOptionGroup").slideDown(500); //adds new item to list
 }
 
+//takes information from the form and puts it into an array for creating a new entry into the database
 function submitNewAppointmentForm() {
     var newAppointmentDetails = [];
     newAppointmentDetails[0] = $("#appointmentTitle").val();
@@ -46,12 +47,10 @@ function insertAppointment(newAppointmentDetails: any) {
         data: { method: "insertAppointment", param: newAppointmentDetails },
         dataType: "json",
         success: function (result: any[]) {
-            alert(result);
-
+            loadAppointmentList()
         },
         error: function () {
             console.log("error");
-
         }
     });
 }
