@@ -41,11 +41,13 @@ class Comments{
         return $err;
     }
 
+    //remove special chars
     private function checkInput($input)
     {
         return htmlspecialchars(stripslashes(trim($input)));
     }
 
+    //check size of input
     private function sizeCheck($input)
     {
         return strlen($input) < 255;

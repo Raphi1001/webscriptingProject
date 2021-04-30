@@ -17,7 +17,7 @@ class Dates {
         $this->setValue($appointment_id, "appointment_id");
         
     }
-    
+
     //checks input and sets value
     function setValue($value, $valueToSet)
     {
@@ -38,11 +38,13 @@ class Dates {
         return $err;
     }
 
+    //remove special chars
     private function checkInput($input)
     {
         return htmlspecialchars(stripslashes(trim($input)));
     }
-
+    
+    //check size of input
     private function sizeCheck($input)
     {
         return strlen($input) < 255;
