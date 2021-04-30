@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.0
+-- version 5.0.4
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 28. Apr 2021 um 19:26
--- Server-Version: 10.4.18-MariaDB
--- PHP-Version: 7.4.16
+-- Generation Time: Apr 30, 2021 at 09:25 AM
+-- Server version: 10.4.16-MariaDB
+-- PHP Version: 7.4.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,14 +18,14 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Datenbank: `webscript_project`
+-- Database: `webscript_project`
 --
 CREATE DATABASE IF NOT EXISTS `webscript_project` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `webscript_project`;
 
 DELIMITER $$
 --
--- Prozeduren
+-- Procedures
 --
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getAppointmentList` ()  SELECT *
 FROM appointments
@@ -36,7 +36,7 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `appointments`
+-- Table structure for table `appointments`
 --
 
 CREATE TABLE `appointments` (
@@ -49,16 +49,17 @@ CREATE TABLE `appointments` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Daten für Tabelle `appointments`
+-- Dumping data for table `appointments`
 --
 
 INSERT INTO `appointments` (`app_id`, `title`, `location`, `description`, `vote_expire`, `creator_name`) VALUES
-(1, 'hallo treff', 'wien', 'cooles treffen haha', '2021-04-29', '1');
+(5, 'Geheimes treffen', 'Geheim', 'PSSSSHHHHHT', '2021-05-07', 'Tri'),
+(6, 'dummy appointment', 'dummytown', 'dummies playin around', '2021-04-29', 'dummy');
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `comments`
+-- Table structure for table `comments`
 --
 
 CREATE TABLE `comments` (
@@ -69,16 +70,18 @@ CREATE TABLE `comments` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Daten für Tabelle `comments`
+-- Dumping data for table `comments`
 --
 
 INSERT INTO `comments` (`comment_id`, `creator_name`, `appointment_id`, `comment`) VALUES
-(1, '1', 1, 'als ob bruh');
+(8, 'GeheimUser', 5, 'hihihihihi'),
+(9, 'dummyOne', 6, 'lesssgoooooo'),
+(10, 'dummyTwo', 6, 'niiiice');
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `dates`
+-- Table structure for table `dates`
 --
 
 CREATE TABLE `dates` (
@@ -88,35 +91,21 @@ CREATE TABLE `dates` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Daten für Tabelle `dates`
+-- Dumping data for table `dates`
 --
 
 INSERT INTO `dates` (`date_id`, `date`, `appointment_id`) VALUES
-(1, '2021-04-30', 1);
+(2, '2021-05-12', 5),
+(3, '2021-05-13', 5),
+(4, '2021-05-14', 5),
+(5, '2021-05-01', 6),
+(6, '2021-05-02', 6),
+(7, '2021-05-03', 6);
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `participation`
---
-
-CREATE TABLE `participation` (
-  `participation_id` int(11) NOT NULL,
-  `participator_name` text NOT NULL,
-  `appointment_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Daten für Tabelle `participation`
---
-
-INSERT INTO `participation` (`participation_id`, `participator_name`, `appointment_id`) VALUES
-(1, '1', 1);
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `votes`
+-- Table structure for table `votes`
 --
 
 CREATE TABLE `votes` (
@@ -126,79 +115,70 @@ CREATE TABLE `votes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Daten für Tabelle `votes`
+-- Dumping data for table `votes`
 --
 
 INSERT INTO `votes` (`vote_id`, `vote_name`, `date_id`) VALUES
-(1, '1', 1);
+(5, 'Harry', 3),
+(6, 'Harry', 4),
+(7, 'Max', 2),
+(8, 'Why', 2);
 
 --
--- Indizes der exportierten Tabellen
+-- Indexes for dumped tables
 --
 
 --
--- Indizes für die Tabelle `appointments`
+-- Indexes for table `appointments`
 --
 ALTER TABLE `appointments`
   ADD PRIMARY KEY (`app_id`);
 
 --
--- Indizes für die Tabelle `comments`
+-- Indexes for table `comments`
 --
 ALTER TABLE `comments`
   ADD PRIMARY KEY (`comment_id`);
 
 --
--- Indizes für die Tabelle `dates`
+-- Indexes for table `dates`
 --
 ALTER TABLE `dates`
   ADD PRIMARY KEY (`date_id`);
 
 --
--- Indizes für die Tabelle `participation`
---
-ALTER TABLE `participation`
-  ADD PRIMARY KEY (`participation_id`);
-
---
--- Indizes für die Tabelle `votes`
+-- Indexes for table `votes`
 --
 ALTER TABLE `votes`
   ADD PRIMARY KEY (`vote_id`);
 
 --
--- AUTO_INCREMENT für exportierte Tabellen
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT für Tabelle `appointments`
+-- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `app_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `app_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT für Tabelle `comments`
+-- AUTO_INCREMENT for table `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT für Tabelle `dates`
+-- AUTO_INCREMENT for table `dates`
 --
 ALTER TABLE `dates`
-  MODIFY `date_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `date_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT für Tabelle `participation`
---
-ALTER TABLE `participation`
-  MODIFY `participation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT für Tabelle `votes`
+-- AUTO_INCREMENT for table `votes`
 --
 ALTER TABLE `votes`
-  MODIFY `vote_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `vote_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
