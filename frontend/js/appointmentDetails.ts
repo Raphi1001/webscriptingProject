@@ -1,3 +1,9 @@
+/**
+ * AJAX calls for communication with the database
+ */
+
+
+//returns the details of the current appointment
 function callAppointmentDetailsData(appId: number) {
     $.ajax({
         type: "GET",
@@ -12,6 +18,7 @@ function callAppointmentDetailsData(appId: number) {
             $("#appointmentDescription").append(result[0].description);
             $("#appointmentExpiryDate").append(result[0].vote_expire);
 
+            //checks if appointment is expired
             var day1: Date = new Date(Date.now());
             var day2: Date = new Date(result[0].vote_expire);
             var difference = day1.getTime() - day2.getTime();
@@ -27,7 +34,7 @@ function callAppointmentDetailsData(appId: number) {
     });
 }
 
-
+//returns all Date Voting Options of the current appointment
 function callAppointDateOptionsData(appId: number) {
     $.ajax({
         type: "GET",
@@ -51,6 +58,7 @@ function callAppointDateOptionsData(appId: number) {
     });
 }
 
+//returns Vote Count for specific Date of the current appointment
 function callSingleDateVoteCountData(date_id: number) {
 
     $.ajax({
@@ -68,7 +76,8 @@ function callSingleDateVoteCountData(date_id: number) {
     });
 }
 
-function callAppointmentVoteNamesData(app_id: number, dateCount: any) { /* Hier */
+//returns all Vote Names of the current appointment
+function callAppointmentVoteNamesData(app_id: number, date: any) {
 
     $.ajax({
         type: "GET",
@@ -78,7 +87,7 @@ function callAppointmentVoteNamesData(app_id: number, dateCount: any) { /* Hier 
         dataType: "json",
         success: function (result: any[]) {
             for (var i = 0; i < result.length; ++i) {
-                callUserVotes(result[i], app_id, dateCount);
+                callUserVotes(result[i], app_id, date);
             }
         },
         error: function () {
@@ -87,7 +96,8 @@ function callAppointmentVoteNamesData(app_id: number, dateCount: any) { /* Hier 
     });
 }
 
-function callUserVotes(username: string, app_id: number, dateCount: any) {
+//returns all Votes for specific Name of the current appointment
+function callUserVotes(username: string, app_id: number, date: any) {
 
     $.ajax({
         type: "GET",
@@ -97,10 +107,10 @@ function callUserVotes(username: string, app_id: number, dateCount: any) {
         dataType: "json",
         success: function (result: any[]) {
             $("tbody").append('<tr id="' + result[0].vote_name + '"><th scope="row">' + result[0].vote_name + '</th></tr>');
-            for (var i = 0; i < dateCount.length; ++i) {
+            for (var i = 0; i < date.length; ++i) {
                 var found = false
                 for (var u = 0; u < result.length; ++u) {
-                    if (result[u].date_id == dateCount[i].date_id) {
+                    if (result[u].date_id == date[i].date_id) {
                         found = true;
                         break;
                     }
@@ -119,43 +129,19 @@ function callUserVotes(username: string, app_id: number, dateCount: any) {
     });
 }
 
-
-
-
-
-function callAppointmentDateVoteData(date_id: number) {
-
-    $.ajax({
-        type: "GET",
-        url: "../backend/serviceHandler.php",
-        cache: false,
-        data: { method: "queryVotesByDateId", param: date_id },
-        dataType: "json",
-        success: function (result: any[]) {
-        },
-        error: function () {
-            console.log("error");
-        }
-    });
-}
-
-
-
-
-
-
+//submit the vote form
 function submitVoteForm() {
     var newVoteDetails = [];
     var username = $("#voteUserName").val();
     if (username) {
-        if ($('#' + username).length) {
-            alert("A vote with the name " + username +  " is already submitted.");
+        if ($('#' + username).length) { //duplicate entries
+            alert("A vote with the name " + username + " is already submitted.");
         }
         else {
             var checkBoxes = $(".dateSelection");
             for (var i = 0; i < checkBoxes.length; ++i) {
                 if ($(checkBoxes[i]).is(':checked')) {
-                    insertVote(username, $(checkBoxes[i]).val());
+                    insertVote(username, $(checkBoxes[i]).val()); //call for each checked box
                 }
             }
         }
@@ -163,7 +149,7 @@ function submitVoteForm() {
 }
 
 
-
+//inserts singel vote to current appointment
 function insertVote(username: any, date_id: any) {
 
     $.ajax({
@@ -188,7 +174,7 @@ function insertVote(username: any, date_id: any) {
 
 
 
-
+//takes the information from the commentform and puts it into an array, which will be sent to the backend
 function submitNewCommentForm(appId: number) {
     var newCommentDetails = [];
     newCommentDetails[0] = $("#commentAuthor").val();
@@ -201,6 +187,7 @@ function submitNewCommentForm(appId: number) {
     insertComment(newCommentDetails);
 }
 
+//inserts singel comment into current appointment
 function insertComment(newCommentDetails: any) {
 
     $.ajax({
@@ -219,7 +206,7 @@ function insertComment(newCommentDetails: any) {
     });
 }
 
-
+//returns all comments for current appointment
 function callAppointmentCommentsData(appId: number) {
     $.ajax({
         type: "GET",
@@ -240,7 +227,7 @@ function callAppointmentCommentsData(appId: number) {
 }
 
 
-
+//deletes an appointment together with all its comments, dates and votes
 function deleteAppointment(appId: number) {
     $.ajax({
         type: "GET",

@@ -26,7 +26,7 @@ class Votes {
         $this->setValue($date_id, "date_id");
     }
     
-
+    //checks input and sets value
     function setValue($value, $valueToSet)
     {
         $err = NULL;

@@ -21,6 +21,7 @@ class Comments{
         $this->setValue($comment, "comment");
     }
 
+    //checks input and sets value
     function setValue($value, $valueToSet)
     {
         $err = NULL;

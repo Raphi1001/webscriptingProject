@@ -14,7 +14,7 @@ function submitNewAppointmentForm() {
     newAppointmentDetails[2] = $("#appointmentDescription").val();
     newAppointmentDetails[3] = $("#appointmentExpiryDate").val();
     newAppointmentDetails[4] = $("#appointmentAuthor").val();
-    
+
     var appointmentDateOptions = $(".appointmentDateOption")
     var appointmentDateOptionsArr = [];
     var found = false;
@@ -38,8 +38,9 @@ function submitNewAppointmentForm() {
     insertAppointment(newAppointmentDetails)
 }
 
-function insertAppointment(newAppointmentDetails: any) {
 
+//takes the collected data from the form and sends it to the backend
+function insertAppointment(newAppointmentDetails: any) {
     $.ajax({
         type: "GET",
         url: "../backend/serviceHandler.php",

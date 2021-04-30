@@ -26,7 +26,7 @@ class Appointment
         $this->setValue($vote_expire, "vote_expire");
         $this->setValue($creator_name, "creator_name");
     }
-
+    //checks input and sets value
     function setValue($value, $valueToSet)
     {
         $err = NULL;
@@ -45,12 +45,13 @@ class Appointment
         }
         return $err;
     }
-
+    //remove special chars
     private function checkInput($input)
     {
         return htmlspecialchars(stripslashes(trim($input)));
     }
 
+    //check size of input
     private function sizeCheck($input)
     {
         return strlen($input) < 255;

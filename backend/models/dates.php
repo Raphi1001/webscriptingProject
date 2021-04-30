@@ -17,7 +17,8 @@ class Dates {
         $this->setValue($appointment_id, "appointment_id");
         
     }
-
+    
+    //checks input and sets value
     function setValue($value, $valueToSet)
     {
         $err = NULL;

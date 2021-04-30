@@ -8,10 +8,17 @@ class DataHandler
 {
     public $conn;
 
-
-    public function __construct()
+    //establishes a connection with the daab
+    function __construct()
     {
-        $this->conn = new DB("localhost", "bif2webscriptinguser", "bif2021", "webscript_project");
+        $ini = parse_ini_file('config.ini');
+        $this->conn = new DB($ini["db_host"], $ini["db_username"], $ini["db_password"], $ini["db_name"]);
+    }
+
+    //disconnects backend from the database
+    function __destruct()
+    {
+        $this->conn->disconnect();
     }
 
     public function queryAppointment()
@@ -25,7 +32,7 @@ class DataHandler
         $res =  $this->conn->getAppointment($id);
         return $res;
     }
-
+    //creates new appointment object and inserts it into database
     public function insertAppointment($newAppointmentDetails)
     {
         $newApp = new Appointment(0, $newAppointmentDetails[0], $newAppointmentDetails[1], $newAppointmentDetails[2], $newAppointmentDetails[3], $newAppointmentDetails[4]);
@@ -38,11 +45,11 @@ class DataHandler
         )   return false;
 
         $res =  $this->conn->createAppointment($newApp);
-        if($res) $res = $this->insertDates($newAppointmentDetails[5]);
+        if ($res) $res = $this->insertDates($newAppointmentDetails[5]);
         return $res;
     }
 
-
+    //returns the app_id of the newest appointment 
     public function getHighestAppId()
     {
         $res = $this->conn->getHighestAppId();
@@ -66,12 +73,14 @@ class DataHandler
     }
 
 
-
+    //loads comment by id from database
     public function queryCommentByAppId($appId)
     {
         $res =  $this->conn->getCommentListByAppId($appId);
         return $res;
     }
+    
+    //creates new comment object and inserts it into database
     public function insertComment($newCommentDetails)
     {
         $newComment = new Comments(0, $newCommentDetails[0], $newCommentDetails[1], $newCommentDetails[2]);
@@ -85,6 +94,7 @@ class DataHandler
         return $res;
     }
 
+    //loads single date by appointment id from database
     public function queryDatesByAppId($appId)
     {
         $res =  $this->conn->getDatesByAppId($appId);
@@ -96,6 +106,8 @@ class DataHandler
         return $res;
     }
 
+
+    //deletes an appointment together with all its comments, dates and votes
     public function deleteAppointment($appId)
     {
         $res1 = $this->conn->deleteVotes($appId);
@@ -111,19 +123,23 @@ class DataHandler
         return $res;
     }
 
+    
+    //returns a list of names that have voted under a certain appointment
     public function queryAppointmentVotes($appId)
     {
         $res =  $this->conn->getNamesVotedByAppointment($appId);
         return $res;
     }
 
+
+    //returns a list of votes depending on the name and apointment
     public function queryUserVotes($username, $appId)
     {
         $res =  $this->conn->getVotesByName($username, $appId);
         return $res;
     }
 
-
+    //creates new vote object and inserts it into database
     public function insertVote($username, $dateId)
     {
         $newVote = new Votes(0, $username, $dateId);
@@ -138,7 +154,7 @@ class DataHandler
 
 
 
-
+    //returns list of votes with a certain date
     public function queryVotesByDateId($dateId)
     {
         $res =  $this->conn->getVotesByDateId($dateId);
